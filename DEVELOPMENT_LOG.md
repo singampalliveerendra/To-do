@@ -17,3 +17,8 @@ Short chronological history of the project. Newest entries at the bottom.
 - Scaffolded with create-vite 9.3.4 (React 19, Vite 8, TypeScript 7 strict, oxlint). Removed demo assets.
 - Added Vitest + React Testing Library with a smoke test, `npm run check` script, `.env` ignore rules, README.
 - `npm run check` all green; dev server verified on localhost:5173.
+- Committed and pushed Task 1.1 (`fb82c5d`). Pushed Phase 0 docs (`a15b015`).
+
+## 2026-11-25 — Task 1.2: Configure Tailwind CSS
+- Added Tailwind CSS 4.3 via the Vite plugin, theme tokens (brand + task status colours), Inter font, and base styles.
+- `npm run check` all green (2 tests); built CSS verified.
