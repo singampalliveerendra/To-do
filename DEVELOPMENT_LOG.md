@@ -78,3 +78,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task R.2: Layout redesign
 - Glass sidebar and header, gradient logo and active pill, animated gradient New task button, drifting background blobs and floating shapes.
 - Caught and fixed two contrast/visual issues via screenshots and the token test (AA-safe button gradient; gradient title sizing). 136 tests green.
+- Committed and pushed Task R.2 (`861e5a6`); CI green.
+
+## 2026-11-25 — Task R.3: Dashboard and task cards
+- Gradient welcome banner with greeting and completion ring, vibrant glass stat cards, illustrated empty states, glass task cards with status strip, confetti burst on completion, staggered entrance animations.
+- Screenshot review caught an emoji rendering issue, a cramped mobile banner and a too-subtle burst — all fixed. 161 tests green.

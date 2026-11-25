@@ -57,6 +57,20 @@
   --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-wiggle: wiggle 0.5s ease-in-out;
   --animate-gradient-pan: gradient-pan 8s ease infinite;
+  --animate-burst: burst 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  --animate-spin-slow: spin 24s linear infinite;
+
+  /* Confetti dot flying outward; set --dx / --dy on the element */
+  @keyframes burst {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--dx), var(--dy)) scale(0.3);
+      opacity: 0;
+    }
+  }
 
   @keyframes float {
     0%,

@@ -109,3 +109,34 @@ describe('completing a task', () => {
     expect(checkbox('Send invoice')).toHaveAttribute('aria-checked', 'false')
   })
 })
+
+describe('completion micro-interactions', () => {
+  it('plays a confetti burst when completing, not when reopening', async () => {
+    const user = userEvent.setup()
+    const repo = createLocalStorageTaskRepository({ storage: window.localStorage })
+    await repo.create({ title: 'Celebrate me', description: '' })
+    renderApp('/', { repository: repo })
+    const box = await screen.findByRole('checkbox', { name: 'Mark "Celebrate me" as complete' })
+    expect(screen.queryByTestId('burst')).not.toBeInTheDocument()
+
+    await user.click(box)
+    const burst = await screen.findByTestId('burst')
+    expect(burst).toHaveAttribute('aria-hidden', 'true')
+    expect(burst.children).toHaveLength(8)
+
+    await user.click(screen.getByRole('checkbox', { name: 'Mark "Celebrate me" as not complete' }))
+    expect(screen.queryByTestId('burst')).not.toBeInTheDocument()
+  })
+
+  it('updates the welcome banner progress as tasks are completed', async () => {
+    const user = userEvent.setup()
+    const repo = createLocalStorageTaskRepository({ storage: window.localStorage })
+    await repo.create({ title: 'One', description: '' })
+    await repo.create({ title: 'Two', description: '' })
+    renderApp('/', { repository: repo })
+    expect(await screen.findByRole('img', { name: '0 of 2 tasks completed (0%)' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('checkbox', { name: 'Mark "One" as complete' }))
+    expect(screen.getByRole('img', { name: '1 of 2 tasks completed (50%)' })).toBeInTheDocument()
+  })
+})

@@ -55,8 +55,9 @@ export function TaskList({
         </EmptyState>
       ) : (
         <ul className="space-y-3" aria-label="Tasks">
-          {tasks.map((task) => (
-            <li key={task.id}>
+          {tasks.map((task, i) => (
+            // Cards slide in one after another (capped so long lists don't wait).
+            <li key={task.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
               <TaskCard task={task} {...actionsFor(task)} />
             </li>
           ))}
