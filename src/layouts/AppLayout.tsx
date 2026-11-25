@@ -1,6 +1,7 @@
 import { Menu } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Outlet, useMatches } from 'react-router'
+import { NewTaskButton } from '@/features/tasks/NewTaskButton'
 import { Sidebar } from './Sidebar'
 
 /** Optional data a route can attach via `handle`, e.g. `{ title: 'Pending' }`. */
@@ -71,7 +72,8 @@ export function AppLayout() {
           >
             <Menu className="size-5" aria-hidden="true" />
           </button>
-          <h1 className="truncate text-lg font-semibold tracking-tight sm:text-xl">{title}</h1>
+          <h1 className="min-w-0 flex-1 truncate text-lg font-semibold tracking-tight sm:text-xl">{title}</h1>
+          <NewTaskButton />
         </header>
 
         <main id="main-content" className="flex-1 px-4 py-6 sm:px-6 lg:px-8">

@@ -1,13 +1,22 @@
-import { ListTodo } from 'lucide-react'
 import { Link } from 'react-router'
 import { NAV_ITEMS } from '@/app/navigation'
-import { EmptyState } from '@/components/EmptyState'
+import { TaskList } from '@/features/tasks/TaskList'
+import { useTasks } from '@/features/tasks/TasksContext'
 import { cn } from '@/lib/cn'
 
-/** Summary cards link to each status view. Counts are wired up in Milestone 2. */
+/** Summary cards link to each status view. */
 const SUMMARY_ITEMS = NAV_ITEMS.filter((item) => item.to !== '/' && item.to !== '/archived')
 
 export function DashboardPage() {
+  const { tasks } = useTasks()
+
+  // Until deadlines and completion exist (Milestones 2.4 / 3 / 4), every task is pending.
+  const counts: Record<string, number> = {
+    Pending: tasks.length,
+    Overdue: 0,
+    Completed: 0,
+  }
+
   return (
     <div className="space-y-6">
       <section aria-labelledby="summary-heading">
@@ -27,7 +36,7 @@ export function DashboardPage() {
                 <span>
                   <span className="block text-sm text-slate-500">{label}</span>
                   <span className="block text-2xl font-semibold" data-testid={`count-${label.toLowerCase()}`}>
-                    0
+                    {counts[label] ?? 0}
                   </span>
                 </span>
               </Link>
@@ -40,9 +49,7 @@ export function DashboardPage() {
         <h2 id="recent-heading" className="text-base font-semibold">
           Your tasks
         </h2>
-        <EmptyState icon={ListTodo} title="No tasks yet">
-          Tasks you create will appear here.
-        </EmptyState>
+        <TaskList tasks={tasks} />
       </section>
     </div>
   )

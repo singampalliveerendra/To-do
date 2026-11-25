@@ -18,13 +18,13 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 | 1.2 | Configure Tailwind CSS, base styles, theme colours, fonts | P0 | Completed | Passed | `7c08e4f` | `feat(ui): configure Tailwind CSS` | Yes |
 | 1.3 | Create scalable folder structure (`app`, `features`, `components`, `lib`, `pages`, `types`, `supabase/`) + path aliases | P0 | Completed | Passed | `b578373` | `chore(structure): create scalable project folder structure` | Yes |
 | 1.4 | Responsive layout: collapsible sidebar (mobile drawer), header, dashboard page, React Router routes | P0 | Completed | Passed | `c0e33e7` | `feat(ui): implement responsive dashboard layout` | Yes |
-| 1.5 | GitHub Actions CI: lint + typecheck + test + build on push/PR | P1 | Testing | Passed (local simulation) | — | `ci: add GitHub Actions workflow for lint, test and build` | No |
+| 1.5 | GitHub Actions CI: lint + typecheck + test + build on push/PR | P1 | Completed | Passed (GitHub run ✅) | `54d58c5` | `ci: add GitHub Actions workflow for lint, test and build` | Yes |
 
 ## Milestone 2 — Core Task Management
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Not Started | — | — | `feat(tasks): implement task creation` | No |
+| 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Testing | Passed | — | `feat(tasks): implement task creation` | No |
 | 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Not Started | — | — | `feat(tasks): add task editing functionality` | No |
 | 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Not Started | — | — | `feat(tasks): implement task deletion and archiving` | No |
 | 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Not Started | — | — | `feat(tasks): add task completion functionality` | No |
@@ -130,4 +130,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: added `.github/workflows/ci.yml` (runs on push/PR to `main` and manually; Node 20, npm cache, `npm ci` → lint → typecheck → test → build; read-only permissions; cancels outdated runs; 15-minute timeout). Added CI badge and a CI section to the README.
 - Tests: simulated the workflow in a clean clone — `npm ci`, lint, typecheck, 15/15 tests, build all passed; `ci.yml` validated as YAML. First real run on GitHub happens after push.
 - Failed: none.
+- Commit: `54d58c5`. Pushed: Yes (2026-11-25). First GitHub Actions run passed (all steps ✅, 18 s).
+
+### 2.1 — Task creation
+- Changed: `Task` / `NewTaskInput` types; validation (title required, ≤200 chars; description ≤5000; whitespace trimmed); `TaskRepository` interface + LocalStorage implementation (key `todo.tasks.v1`, newest first, ignores corrupted data, friendly error when storage is full); `TasksProvider` + `useTasks`; reusable `Modal` (portal, Escape/backdrop close, focus handling) and `TaskForm` (inline errors, character counter, double-submit guard); "New task" button in the header; task list on Dashboard and Pending page; Pending counter wired.
+- Tests: `npm run check` → lint, typecheck, 47/47 tests, build all passed. Browser check (Playwright): created 2 tasks, refreshed page, both still there; no console errors; no horizontal overflow on mobile.
+- Failed / fixed: browser screenshots showed the dialog stuck at the top of the screen (header `backdrop-blur` traps `position: fixed`). Fixed by rendering the Modal through a portal into `<body>`; added a regression test.
 - Commit: waiting for approval. Pushed: No.

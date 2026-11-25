@@ -37,3 +37,9 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 1.5: GitHub Actions CI
 - Added CI workflow (lint, typecheck, test, build on Node 20) and README badge.
 - Simulated the pipeline in a clean clone: all steps passed.
+- Committed and pushed Task 1.5 (`54d58c5`); first GitHub Actions run green. **Milestone 1 complete.**
+
+## 2026-11-25 — Task 2.1: Task creation
+- Added task type, validation, LocalStorage repository, tasks context, Modal, TaskForm, header "New task" button, task list on Dashboard/Pending.
+- Browser check found the dialog trapped inside the header (backdrop-blur containing block); fixed with a portal + regression test.
+- 47 tests green; tasks survive page refresh.

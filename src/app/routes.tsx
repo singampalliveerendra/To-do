@@ -1,8 +1,9 @@
-import { Archive, CircleAlert, CircleCheckBig, Clock } from 'lucide-react'
+import { Archive, CircleAlert, CircleCheckBig } from 'lucide-react'
 import type { RouteObject } from 'react-router'
 import { AppLayout, type RouteHandle } from '@/layouts/AppLayout'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { PendingPage } from '@/pages/PendingPage'
 import { TaskViewPage } from '@/pages/TaskViewPage'
 
 const handle = (title: string): RouteHandle => ({ title })
@@ -16,9 +17,7 @@ export const routes: RouteObject[] = [
       {
         path: 'pending',
         handle: handle('Pending'),
-        element: (
-          <TaskViewPage icon={Clock} emptyTitle="No pending tasks" emptyText="Tasks that are still on time will show here." />
-        ),
+        element: <PendingPage />,
       },
       {
         path: 'overdue',

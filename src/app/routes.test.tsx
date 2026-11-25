@@ -1,25 +1,20 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
-import { routes } from './routes'
+import { renderApp } from '@/test/renderApp'
 
-function renderAt(path: string) {
-  const router = createMemoryRouter(routes, { initialEntries: [path] })
-  render(<RouterProvider router={router} />)
-  return router
-}
+const renderAt = (path: string) => renderApp(path).router
 
 const pageHeading = () => screen.getByRole('heading', { level: 1 })
 
 describe('app routes and layout', () => {
-  it('shows the dashboard with summary cards at "/"', () => {
+  it('shows the dashboard with summary cards at "/"', async () => {
     renderAt('/')
     expect(pageHeading()).toHaveTextContent('Dashboard')
     expect(screen.getByTestId('count-pending')).toHaveTextContent('0')
     expect(screen.getByTestId('count-overdue')).toHaveTextContent('0')
     expect(screen.getByTestId('count-completed')).toHaveTextContent('0')
-    expect(screen.getByText('No tasks yet')).toBeInTheDocument()
+    expect(await screen.findByText('No tasks yet')).toBeInTheDocument()
     expect(document.title).toBe('Dashboard · To-Do')
   })
 
@@ -35,10 +30,10 @@ describe('app routes and layout', () => {
     ['/overdue', 'Overdue', 'Nothing overdue'],
     ['/completed', 'Completed', 'No completed tasks'],
     ['/archived', 'Archived', 'No archived tasks'],
-  ])('renders %s with title "%s"', (path, title, emptyText) => {
+  ])('renders %s with title "%s"', async (path, title, emptyText) => {
     renderAt(path)
     expect(pageHeading()).toHaveTextContent(title)
-    expect(screen.getByText(emptyText)).toBeInTheDocument()
+    expect(await screen.findByText(emptyText)).toBeInTheDocument()
     expect(document.title).toBe(`${title} · To-Do`)
   })
 
