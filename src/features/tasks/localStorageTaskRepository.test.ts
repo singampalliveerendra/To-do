@@ -28,6 +28,7 @@ describe('createLocalStorageTaskRepository', () => {
       description: 'Q4 numbers',
       createdAt: '2026-11-25T10:01:00.000Z',
       updatedAt: '2026-11-25T10:01:00.000Z',
+      completedAt: null,
       archivedAt: null,
     })
   })
@@ -74,13 +75,14 @@ describe('createLocalStorageTaskRepository', () => {
       description: '',
       createdAt: '2026-11-25T09:00:00.000Z',
       updatedAt: '2026-11-25T09:00:00.000Z',
+      completedAt: null,
       archivedAt: null,
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([valid, { id: 1 }, null, 'text']))
     expect(await makeRepo().list()).toEqual([valid])
   })
 
-  it('loads tasks saved before archiving existed as active (archivedAt: null)', async () => {
+  it('loads tasks saved by older versions as active and not complete', async () => {
     const legacy = {
       id: 'old',
       title: 'Saved by v2.2',
@@ -89,7 +91,7 @@ describe('createLocalStorageTaskRepository', () => {
       updatedAt: '2026-11-25T09:00:00.000Z',
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([legacy]))
-    expect(await makeRepo().list()).toEqual([{ ...legacy, archivedAt: null }])
+    expect(await makeRepo().list()).toEqual([{ ...legacy, completedAt: null, archivedAt: null }])
   })
 
   it('reports a friendly error when storage is full', async () => {
@@ -219,6 +221,66 @@ describe('createLocalStorageTaskRepository', () => {
     })
 
     it.each(['archive', 'restore', 'delete'] as const)('%s throws TaskNotFoundError for an unknown id', async (method) => {
+      await expect(makeRepo()[method]('missing')).rejects.toBeInstanceOf(TaskNotFoundError)
+    })
+  })
+
+  describe('complete and reopen', () => {
+    it('complete records the exact completion time and keeps every other detail', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Send invoice', description: 'to client' })
+
+      const done = await repo.complete(created.id)
+
+      expect(done).toEqual({ ...created, completedAt: '2026-11-25T10:02:00.000Z' })
+      // Completing is not an edit: the "Edited" time does not change.
+      expect(done.updatedAt).toBe(created.updatedAt)
+    })
+
+    it('completing twice keeps the first completion time', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'x', description: '' })
+      const first = await repo.complete(created.id)
+      const second = await repo.complete(created.id)
+      expect(second.completedAt).toBe(first.completedAt)
+    })
+
+    it('reopen clears completedAt', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Oops', description: '' })
+      await repo.complete(created.id)
+
+      expect(await repo.reopen(created.id)).toEqual(created)
+    })
+
+    it('completion survives a refresh', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Persist me', description: '' })
+      await repo.complete(created.id)
+
+      const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+      expect((await afterRefresh.list())[0].completedAt).toBe('2026-11-25T10:02:00.000Z')
+    })
+
+    it('loads a saved completion time', async () => {
+      window.localStorage.setItem(
+        TASKS_STORAGE_KEY,
+        JSON.stringify([
+          {
+            id: 'a',
+            title: 'Done before',
+            description: '',
+            createdAt: '2026-11-25T09:00:00.000Z',
+            updatedAt: '2026-11-25T09:00:00.000Z',
+            completedAt: '2026-11-25T09:30:00.000Z',
+            archivedAt: null,
+          },
+        ]),
+      )
+      expect((await makeRepo().list())[0].completedAt).toBe('2026-11-25T09:30:00.000Z')
+    })
+
+    it.each(['complete', 'reopen'] as const)('%s throws TaskNotFoundError for an unknown id', async (method) => {
       await expect(makeRepo()[method]('missing')).rejects.toBeInstanceOf(TaskNotFoundError)
     })
   })

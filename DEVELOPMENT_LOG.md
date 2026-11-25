@@ -54,3 +54,8 @@ Short chronological history of the project. Newest entries at the bottom.
 - Two-step safety: tasks are archived first (soft delete, restorable); only archived tasks can be permanently deleted. Both actions ask for confirmation with Cancel focused.
 - Archived page with Restore / Delete permanently. Older saved data migrates automatically.
 - 82 tests green; browser check on desktop and mobile passed.
+- Committed and pushed Task 2.3 (`ef4208d`); CI green.
+
+## 2026-11-25 — Task 2.4: Task completion
+- Added completion checkbox, `completedAt` with exact time, reopen, Completed page, Pending/Completed counters.
+- 101 tests green; browser check on desktop and mobile passed.

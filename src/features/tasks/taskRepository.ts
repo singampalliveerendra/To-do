@@ -15,6 +15,10 @@ export interface TaskRepository {
    * Throws `TaskNotFoundError` if the task no longer exists.
    */
   update(id: string, input: NewTaskInput): Promise<Task>
+  /** Marks a task as finished, recording the exact completion time. */
+  complete(id: string): Promise<Task>
+  /** Marks a finished task as not finished again (e.g. ticked by mistake). */
+  reopen(id: string): Promise<Task>
   /** Soft-deletes a task: it is hidden from active views but all its data is kept. */
   archive(id: string): Promise<Task>
   /** Brings an archived task back to the active views. */

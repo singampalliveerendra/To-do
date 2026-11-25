@@ -12,7 +12,8 @@ interface Options {
 
 /**
  * Turns one stored entry into a Task, or null if it is not a valid task.
- * Fills in fields added after the entry was saved (e.g. `archivedAt` from Task 2.3),
+ * Fills in fields added after the entry was saved (`archivedAt` from Task 2.3,
+ * `completedAt` from Task 2.4),
  * so data saved by older versions of the app keeps working.
  */
 function parseTask(value: unknown): Task | null {
@@ -33,6 +34,7 @@ function parseTask(value: unknown): Task | null {
     description: v.description,
     createdAt: v.createdAt,
     updatedAt: v.updatedAt,
+    completedAt: typeof v.completedAt === 'string' ? v.completedAt : null,
     archivedAt: typeof v.archivedAt === 'string' ? v.archivedAt : null,
   }
 }
@@ -96,6 +98,7 @@ export function createLocalStorageTaskRepository({
         description,
         createdAt: timestamp,
         updatedAt: timestamp,
+        completedAt: null,
         archivedAt: null,
       }
       write([task, ...read()])
@@ -113,6 +116,15 @@ export function createLocalStorageTaskRepository({
           ? task
           : { ...task, title, description, updatedAt: now().toISOString() },
       )
+    },
+
+    async complete(id) {
+      // Already complete → keep the original completion time.
+      return modify(id, (task) => (task.completedAt ? task : { ...task, completedAt: now().toISOString() }))
+    },
+
+    async reopen(id) {
+      return modify(id, (task) => (task.completedAt ? { ...task, completedAt: null } : task))
     },
 
     async archive(id) {

@@ -1,7 +1,8 @@
-import { CircleAlert, CircleCheckBig } from 'lucide-react'
+import { CircleAlert } from 'lucide-react'
 import type { RouteObject } from 'react-router'
 import { AppLayout, type RouteHandle } from '@/layouts/AppLayout'
 import { ArchivedPage } from '@/pages/ArchivedPage'
+import { CompletedPage } from '@/pages/CompletedPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PendingPage } from '@/pages/PendingPage'
@@ -34,13 +35,7 @@ export const routes: RouteObject[] = [
       {
         path: 'completed',
         handle: handle('Completed'),
-        element: (
-          <TaskViewPage
-            icon={CircleCheckBig}
-            emptyTitle="No completed tasks"
-            emptyText="Finished tasks, including ones completed late, will show here."
-          />
-        ),
+        element: <CompletedPage />,
       },
       {
         path: 'archived',

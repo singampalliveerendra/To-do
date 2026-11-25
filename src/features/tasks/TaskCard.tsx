@@ -1,9 +1,12 @@
-import { Archive, ArchiveRestore, Pencil, Trash2, type LucideIcon } from 'lucide-react'
+import { Archive, ArchiveRestore, Check, Pencil, Trash2, type LucideIcon } from 'lucide-react'
+import { useState } from 'react'
 import { cn } from '@/lib/cn'
 import { formatDateTime } from '@/lib/datetime'
 import type { Task } from '@/types/task'
 
 export interface TaskCardActions {
+  /** When set, the card shows a completion checkbox. */
+  onToggleComplete?: (task: Task) => Promise<unknown>
   onEdit?: (task: Task) => void
   onArchive?: (task: Task) => void
   onRestore?: (task: Task) => void
@@ -41,9 +44,21 @@ function IconButton({
   )
 }
 
-export function TaskCard({ task, onEdit, onArchive, onRestore, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onToggleComplete, onEdit, onArchive, onRestore, onDelete }: TaskCardProps) {
   const wasEdited = task.updatedAt !== task.createdAt
+  const isDone = task.completedAt !== null
   const name = `"${task.title}"`
+  const [toggling, setToggling] = useState(false)
+
+  async function toggle() {
+    if (!onToggleComplete || toggling) return
+    setToggling(true)
+    try {
+      await onToggleComplete(task)
+    } finally {
+      setToggling(false)
+    }
+  }
 
   return (
     <article
@@ -53,8 +68,32 @@ export function TaskCard({ task, onEdit, onArchive, onRestore, onDelete }: TaskC
       )}
     >
       <div className="flex items-start gap-3">
+        {onToggleComplete && (
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={isDone}
+            aria-label={isDone ? `Mark ${name} as not complete` : `Mark ${name} as complete`}
+            onClick={toggle}
+            disabled={toggling}
+            className={cn(
+              'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors disabled:opacity-50',
+              isDone
+                ? 'border-status-completed bg-status-completed text-white'
+                : 'border-slate-300 text-transparent hover:border-status-completed hover:text-status-completed/40',
+            )}
+          >
+            <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+          </button>
+        )}
         <div className="min-w-0 flex-1">
-          <h3 className={cn('font-medium break-words', task.archivedAt ? 'text-slate-600' : 'text-slate-900')}>
+          <h3
+            className={cn(
+              'font-medium break-words',
+              isDone && 'text-slate-500 line-through decoration-slate-400',
+              !isDone && (task.archivedAt ? 'text-slate-600' : 'text-slate-900'),
+            )}
+          >
             {task.title}
           </h3>
           {task.description && (
@@ -77,6 +116,14 @@ export function TaskCard({ task, onEdit, onArchive, onRestore, onDelete }: TaskC
         {wasEdited && (
           <>
             {' · '}Edited <time dateTime={task.updatedAt}>{formatDateTime(task.updatedAt)}</time>
+          </>
+        )}
+        {task.completedAt && (
+          <>
+            {' · '}
+            <span className="font-medium text-status-completed">
+              Completed <time dateTime={task.completedAt}>{formatDateTime(task.completedAt)}</time>
+            </span>
           </>
         )}
         {task.archivedAt && (

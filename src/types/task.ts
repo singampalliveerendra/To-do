@@ -5,6 +5,8 @@ export interface Task {
   description: string
   createdAt: string
   updatedAt: string
+  /** When the task was marked complete, or null if it is not finished. */
+  completedAt: string | null
   /** When the task was archived (soft-deleted), or null if it is active. */
   archivedAt: string | null
 }

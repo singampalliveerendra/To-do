@@ -52,6 +52,16 @@ export function TasksProvider({ repository, children }: TasksProviderProps) {
     [repository, replaceTask],
   )
 
+  const completeTask = useCallback(
+    async (id: string) => replaceTask(await repository.complete(id)),
+    [repository, replaceTask],
+  )
+
+  const reopenTask = useCallback(
+    async (id: string) => replaceTask(await repository.reopen(id)),
+    [repository, replaceTask],
+  )
+
   const archiveTask = useCallback(
     async (id: string) => replaceTask(await repository.archive(id)),
     [repository, replaceTask],
@@ -71,8 +81,19 @@ export function TasksProvider({ repository, children }: TasksProviderProps) {
   )
 
   const value = useMemo(
-    () => ({ tasks, status, error, createTask, updateTask, archiveTask, restoreTask, deleteTask }),
-    [tasks, status, error, createTask, updateTask, archiveTask, restoreTask, deleteTask],
+    () => ({
+      tasks,
+      status,
+      error,
+      createTask,
+      updateTask,
+      completeTask,
+      reopenTask,
+      archiveTask,
+      restoreTask,
+      deleteTask,
+    }),
+    [tasks, status, error, createTask, updateTask, completeTask, reopenTask, archiveTask, restoreTask, deleteTask],
   )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>

@@ -25,7 +25,7 @@ export function TaskList({
   emptyTitle = 'No tasks yet',
   emptyText = 'Click “New task” to add your first one.',
 }: TaskListProps) {
-  const { status, error, archiveTask, restoreTask, deleteTask } = useTasks()
+  const { status, error, completeTask, reopenTask, archiveTask, restoreTask, deleteTask } = useTasks()
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [confirm, setConfirm] = useState<PendingConfirm>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -33,14 +33,22 @@ export function TaskList({
   const closeEditor = useCallback(() => setEditingTask(null), [])
   const closeConfirm = useCallback(() => setConfirm(null), [])
 
-  async function handleRestore(task: Task) {
+  /** Runs a one-click action, showing any error above the list. */
+  async function run(action: () => Promise<unknown>, fallback: string) {
     setActionError(null)
     try {
-      await restoreTask(task.id)
+      await action()
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Could not restore the task.')
+      setActionError(err instanceof Error ? err.message : fallback)
     }
   }
+
+  const handleRestore = (task: Task) => run(() => restoreTask(task.id), 'Could not restore the task.')
+  const handleToggleComplete = (task: Task) =>
+    run(
+      () => (task.completedAt ? reopenTask(task.id) : completeTask(task.id)),
+      'Could not update the task. Please try again.',
+    )
 
   if (status === 'loading') {
     return (
@@ -60,7 +68,11 @@ export function TaskList({
 
   const actions =
     variant === 'active'
-      ? { onEdit: setEditingTask, onArchive: (task: Task) => setConfirm({ kind: 'archive', task }) }
+      ? {
+          onToggleComplete: handleToggleComplete,
+          onEdit: setEditingTask,
+          onArchive: (task: Task) => setConfirm({ kind: 'archive', task }),
+        }
       : { onRestore: handleRestore, onDelete: (task: Task) => setConfirm({ kind: 'delete', task }) }
 
   return (
