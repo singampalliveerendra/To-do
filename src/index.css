@@ -2,27 +2,40 @@
 
 /*
  * ─────────────────────────────────────────────────────────────
- *  Design system — "Vibrant & playful"
- *  Use tokens as Tailwind utilities: `bg-brand-600`, `text-status-overdue`,
- *  `font-display`, `animate-float`, plus the custom utilities below
- *  (`bg-gradient-brand`, `text-gradient-brand`, `glass`, `shadow-glow` …).
+ *  Design system — "Paper & Ink" (calm, comic-inspired minimalism)
+ *  Cream paper, crisp ink outlines, small hard offset shadows, one sunny
+ *  accent. Use tokens as Tailwind utilities: `bg-paper`, `border-ink`,
+ *  `bg-accent`, `bg-status-pending-soft`, plus the utilities below
+ *  (`surface`, `shadow-hard-sm`, `btn-press`, `paper-dots` …).
+ *
+ *  (The older vibrant utilities further down — glass, gradients, glow — are
+ *  kept only until every component has moved over; they are removed in S.4.)
  * ─────────────────────────────────────────────────────────────
  */
 @theme {
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand — electric violet */
-  --color-brand-50: #f5f3ff;
-  --color-brand-100: #ede9fe;
-  --color-brand-200: #ddd6fe;
-  --color-brand-300: #c4b5fd;
-  --color-brand-400: #a78bfa;
-  --color-brand-500: #8b5cf6;
-  --color-brand-600: #7c3aed;
-  --color-brand-700: #6d28d9;
-  --color-brand-800: #5b21b6;
-  --color-brand-900: #4c1d95;
+  /* Paper & ink */
+  --color-paper: #faf6ec;
+  --color-paper-deep: #f2ecdc;
+  --color-ink: #1a1a1a;
+
+  /* The one accent: sunny marker yellow (ink text on it is ~14:1) */
+  --color-accent: #ffd60a;
+  --color-accent-soft: #fff4bf;
+
+  /* Brand — warm charcoal (was electric violet). Neutral, so the accent pops. */
+  --color-brand-50: #f7f4ec;
+  --color-brand-100: #eee9dc;
+  --color-brand-200: #ddd6c4;
+  --color-brand-300: #c2b9a3;
+  --color-brand-400: #9a9180;
+  --color-brand-500: #6e675a;
+  --color-brand-600: #45403a;
+  --color-brand-700: #2e2a25;
+  --color-brand-800: #221f1b;
+  --color-brand-900: #1a1a1a;
 
   /* Pop colours — for gradients, illustrations and decoration (not body text) */
   --color-pop-pink: #ec4899;
@@ -41,11 +54,18 @@
    * Task status colours — one place to change them for the whole app.
    * Chosen to keep ≥ 4.5:1 contrast as text on white (WCAG AA).
    */
-  --color-status-pending: #2563eb;
-  --color-status-overdue: #e11d48;
+  --color-status-pending: #1d4ed8;
+  --color-status-overdue: #be123c;
   --color-status-completed: #047857;
-  --color-status-late: #b45309;
-  --color-status-archived: #64748b;
+  --color-status-late: #92400e;
+  --color-status-archived: #52606d;
+
+  /* Soft backgrounds for status chips (status text on these stays ≥ 4.5:1) */
+  --color-status-pending-soft: #e4ecff;
+  --color-status-overdue-soft: #ffe4e1;
+  --color-status-completed-soft: #daf3e9;
+  --color-status-late-soft: #fdefcf;
+  --color-status-archived-soft: #ececea;
 
   --radius-4xl: 2rem;
 
@@ -141,95 +161,89 @@
   }
 }
 
-/* ── Custom utilities ─────────────────────────────────────── */
+/* ── Paper & Ink utilities ────────────────────────────────── */
 
-/* Signature gradient: violet → fuchsia → orange */
-@utility bg-gradient-brand {
-  background-image: linear-gradient(
-    120deg,
-    var(--color-brand-600) 0%,
-    var(--color-pop-fuchsia) 55%,
-    var(--color-pop-orange) 100%
-  );
+/* Small hard offset shadows (no blur) */
+@utility shadow-hard-xs {
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+@utility shadow-hard-sm {
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+@utility shadow-hard {
+  box-shadow: 5px 5px 0 var(--color-ink);
 }
 
-/* Same gradient, animated (use with large backgrounds/buttons) */
-@utility bg-gradient-brand-animated {
-  background-image: linear-gradient(
-    120deg,
-    var(--color-brand-600),
-    var(--color-pop-fuchsia),
-    var(--color-pop-orange),
-    var(--color-pop-fuchsia),
-    var(--color-brand-600)
-  );
-  background-size: 300% 300%;
-  animation: var(--animate-gradient-pan);
+/* Standard card: white sheet, crisp ink outline, small hard shadow */
+@utility surface {
+  background-color: #fff;
+  border: 2px solid var(--color-ink);
+  border-radius: 14px;
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+/* Pressable control: lifts a little on hover, presses flat on click */
+@utility btn-press {
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: 3px 3px 0 var(--color-ink);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background-color 0.15s ease;
+  &:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-ink);
+  }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-ink);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+/* Very faint dot grid, like notebook paper */
+@utility paper-dots {
+  background-image: radial-gradient(rgb(26 26 26 / 0.07) 1px, transparent 1.2px);
+  background-size: 22px 22px;
 }
 
 /*
- * Button gradient: like the brand gradient but every stop keeps white text
- * readable (WCAG AA). Use this — not bg-gradient-brand — behind text.
+ * ── Legacy aliases (removed in S.4) ─────────────────────────
+ * Old "vibrant" utility names, re-pointed to calm Paper & Ink equivalents so
+ * the whole app looks consistent while components are migrated one by one.
  */
+@utility bg-gradient-brand {
+  background-color: var(--color-accent);
+}
+@utility bg-gradient-brand-animated {
+  background-color: var(--color-accent);
+}
 @utility bg-gradient-button {
-  background-image: linear-gradient(
-    120deg,
-    var(--color-brand-700) 0%,
-    var(--color-pop-fuchsia-deep) 60%,
-    var(--color-pop-pink-deep) 100%
-  );
+  background-color: var(--color-ink);
 }
-
 @utility bg-gradient-button-animated {
-  background-image: linear-gradient(
-    120deg,
-    var(--color-brand-700),
-    var(--color-pop-fuchsia-deep),
-    var(--color-pop-pink-deep),
-    var(--color-pop-fuchsia-deep),
-    var(--color-brand-700)
-  );
-  background-size: 300% 300%;
-  animation: var(--animate-gradient-pan);
+  background-color: var(--color-ink);
 }
-
-/* Gradient text for headings — deep stops keep it readable (≥ 4.5:1). Falls back to solid brand colour. */
 @utility text-gradient-brand {
-  color: var(--color-brand-700);
-  background-image: linear-gradient(110deg, var(--color-brand-700), var(--color-pop-fuchsia-deep) 60%, var(--color-pop-pink-deep));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--color-ink);
 }
-
-/* Frosted glass surface */
 @utility glass {
-  background-color: rgb(255 255 255 / 0.65);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgb(255 255 255 / 0.7);
+  background-color: #fff;
+  border: 2px solid var(--color-ink);
 }
-
-/* Stronger glass for overlays (dialogs) */
 @utility glass-strong {
-  background-color: rgb(255 255 255 / 0.85);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgb(255 255 255 / 0.8);
+  background-color: #fff;
+  border: 2px solid var(--color-ink);
 }
-
-/* Coloured glow shadow (brand) */
 @utility shadow-glow {
-  box-shadow:
-    0 10px 30px -10px rgb(124 58 237 / 0.45),
-    0 4px 12px -4px rgb(217 70 239 / 0.3);
+  box-shadow: 3px 3px 0 var(--color-ink);
 }
-
-/* Soft lift shadow for cards */
 @utility shadow-card {
-  box-shadow:
-    0 1px 2px rgb(15 23 42 / 0.04),
-    0 8px 24px -12px rgb(76 29 149 / 0.18);
+  box-shadow: 2px 2px 0 var(--color-ink);
 }
 
 /* ── Base styles ──────────────────────────────────────────── */
@@ -240,15 +254,7 @@
   }
 
   body {
-    @apply min-h-screen font-sans text-slate-900 antialiased;
-    /* Soft pastel mesh behind everything */
-    background-color: #faf7ff;
-    background-image:
-      radial-gradient(at 0% 0%, rgb(196 181 253 / 0.35) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgb(251 207 232 / 0.4) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgb(254 215 170 / 0.35) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, rgb(165 243 252 / 0.3) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply paper-dots min-h-screen bg-paper font-sans text-ink antialiased;
   }
 
   h1,
@@ -259,11 +265,11 @@
 
   /* Visible keyboard focus everywhere, hidden for mouse clicks */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-500;
+    @apply outline-2 outline-offset-2 outline-ink;
   }
 
   ::selection {
-    @apply bg-pop-fuchsia/25 text-brand-900;
+    @apply bg-accent text-ink;
   }
 }
 

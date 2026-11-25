@@ -38,8 +38,19 @@ _Goal: attractive, energetic, playful, premium UI — bold gradients, vibrant co
 |---|---|---|---|---|---|---|---|
 | R.1 | Design system: fonts (Bricolage Grotesque + Plus Jakarta Sans), vibrant violet/fuchsia/orange palette, AA-contrast status colours, gradient/glass/glow utilities, animation keyframes, pastel mesh background, reduced-motion support | P1 | Completed | Passed (GitHub run ✅) | `bcc2e01` | `feat(ui): add vibrant design system tokens and animations` | Yes |
 | R.2 | Layout: glass sidebar with gradient logo, colourful nav, glass header, floating animated background blobs | P1 | Completed | Passed (GitHub run ✅) | `861e5a6` | `feat(ui): redesign app layout with glass and floating elements` | Yes |
-| R.3 | Dashboard & task cards: gradient hero/greeting, vibrant stat cards, playful empty-state illustrations, animated cards and checkbox micro-interactions | P1 | Testing | Passed | — | `feat(ui): redesign dashboard and task cards` | No |
-| R.4 | Dialogs, forms, details page and 404: glass dialogs with pop-in, gradient buttons, redesigned details/history, fun 404 | P1 | Not Started | — | — | `feat(ui): redesign dialogs, forms and task details` | No |
+| R.3 | Dashboard & task cards: gradient hero/greeting, vibrant stat cards, playful empty-state illustrations, animated cards and checkbox micro-interactions | P1 | Completed | Passed (GitHub run ✅) | `59d24b4` | `feat(ui): redesign dashboard and task cards` | Yes |
+| R.4 | ~~Dialogs, forms, details page and 404 (vibrant style)~~ — superseded by Milestone S | — | Cancelled | — | — | — | — |
+
+## Milestone S — "Paper & Ink" redesign (requested by owner, 2026-11-25)
+
+_Goal: calm, minimal, premium UI inspired by the comic look of the SNACCOON template — cream paper, crisp ink outlines, small hard offset shadows, one sunny accent — without clutter. Clear task hierarchy, smooth spacing, subtle colours, excellent usability and mobile layout. Replaces the vibrant violet/glass direction of R.1–R.3._
+
+| ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
+|---|---|---|---|---|---|---|---|
+| S.1 | Design system: paper/ink/accent tokens, calm charcoal brand scale, deeper AA status colours + soft chip backgrounds, `surface` / `btn-press` / hard-shadow / `paper-dots` utilities, legacy vibrant utilities re-pointed to calm equivalents | P1 | Testing | Passed | — | `feat(ui): introduce paper and ink design system` | No |
+| S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Not Started | — | — | `feat(ui): restyle layout with paper and ink` | No |
+| S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Not Started | — | — | `feat(ui): restyle dashboard, progress and task cards` | No |
+| S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Not Started | — | — | `feat(ui): restyle task forms, details and dialogs` | No |
 
 ## Milestone 3 — Deadlines & Progress Tracking
 
@@ -189,4 +200,13 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: new `WelcomeBanner` (animated AA-safe gradient, date, time-of-day greeting with waving-hand icon, motivational line, SVG completion ring with an accessible label, floating sparkles; party popper when all done) backed by tested helpers in `src/lib/greeting.ts`. Stat cards: glass, gradient icon tiles, big display numbers, hint text, glow blob that grows on hover, lift on hover, staggered entrance. "Your tasks" header with active-count chip. `EmptyState` is now an illustration (glowing blob, slowly spinning dashed orbit, tilted floating tile, sparkles and dots). `TaskCard`: glass, rounded-3xl, status colour strip (gradient for open, green for done, grey for archived), lift + glow on hover, bigger gradient checkbox with pop-in tick and an 8-dot confetti burst on completion, status chips for Completed/Archived times, meta text darkened to slate-500 for AA contrast. Task lists slide in with a staggered fade-up. New `burst` and `spin-slow` animations.
 - Tests: new `greeting.test.ts`, `WelcomeBanner.test.tsx`, and completion micro-interaction tests (burst only on completing, banner progress updates). `npm run check` → lint, typecheck, 161/161 tests, build passed. Browser (desktop + mobile, empty and full): no overflow, no console errors.
 - Failed / fixed from screenshots: (1) 👋 emoji rendered as an empty box where no emoji font exists — replaced with a Lucide icon (and removed the 🔥 from the message); (2) mobile banner stacked the ring above the text — now side by side with a smaller ring; (3) confetti was hard to see — bigger dots, longer animation.
+- Commit: `59d24b4`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### R.4 — cancelled
+- Owner asked for a calmer, minimal "Paper & Ink" direction instead (Milestone S).
+
+### S.1 — Paper & Ink design system
+- Changed: `src/index.css` — new tokens `paper`, `paper-deep`, `ink`, `accent` (#FFD60A), `accent-soft`; brand scale re-tuned from violet to warm charcoal; status colours deepened (pending #1d4ed8, overdue #be123c, late #92400e, archived #52606d) with new `status-*-soft` chip backgrounds; utilities `shadow-hard-xs/sm`, `shadow-hard`, `surface`, `btn-press`, `paper-dots`; page background is dotted cream paper; ink focus ring; yellow text selection. The old vibrant utilities (gradients, glass, glow) now map to calm equivalents until S.4 removes them.
+- Tests: `designTokens.test.ts` extended — ink ≥ 7:1 on paper/white/accent, every status text ≥ 4.5:1 on its soft chip, brand is low-saturation, new utilities exist, hard shadows. `npm run check` → lint, typecheck, 173/173 tests, build passed. Browser: desktop + mobile, no overflow, no console errors.
+- Failed / fixed: the new test showed 4 status colours were below 4.5:1 on their soft chips — deepened them (all now 5.2–6.2:1).
 - Commit: waiting for approval. Pushed: No.

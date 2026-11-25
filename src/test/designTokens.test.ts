@@ -73,4 +73,35 @@ describe('design tokens', () => {
     expect(contrast('#000000', WHITE)).toBeCloseTo(21, 0)
     expect(contrast('#777777', WHITE)).toBeCloseTo(4.48, 1)
   })
+
+  describe('Paper & Ink (S.1)', () => {
+    it('ink text is highly readable on paper, white and the yellow accent (WCAG AAA ≥ 7:1)', () => {
+      for (const bg of [token('color-paper'), WHITE, token('color-accent'), token('color-accent-soft')]) {
+        expect(contrast(token('color-ink'), bg), bg).toBeGreaterThanOrEqual(7)
+      }
+    })
+
+    it.each(['pending', 'overdue', 'completed', 'late', 'archived'])(
+      'status "%s" text stays readable on its soft chip background (AA)',
+      (status) => {
+        const text = token(`color-status-${status}`)
+        const bg = token(`color-status-${status}-soft`)
+        expect(contrast(text, bg)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+      },
+    )
+
+    it('brand is now a calm neutral (low saturation), not violet', () => {
+      const hex = token('color-brand-600')
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+      expect(Math.max(r, g, b) - Math.min(r, g, b)).toBeLessThan(24)
+    })
+
+    it.each(['surface', 'btn-press', 'shadow-hard-sm', 'paper-dots'])('provides the %s utility', (utility) => {
+      expect(css).toContain(`@utility ${utility} {`)
+    })
+
+    it('uses hard (blur-free) shadows for the new style', () => {
+      expect(css).toMatch(/@utility shadow-hard-sm \{\s*box-shadow: 3px 3px 0 var\(--color-ink\);/)
+    })
+  })
 })

@@ -83,3 +83,12 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task R.3: Dashboard and task cards
 - Gradient welcome banner with greeting and completion ring, vibrant glass stat cards, illustrated empty states, glass task cards with status strip, confetti burst on completion, staggered entrance animations.
 - Screenshot review caught an emoji rendering issue, a cramped mobile banner and a too-subtle burst — all fixed. 161 tests green.
+- Committed and pushed Task R.3 (`59d24b4`); CI green. R.4 cancelled in favour of a calmer direction.
+- (Side project, separate repo: `~/memecoin-template` — SNACCOON comic landing page. Not part of this repo.)
+
+## 2026-11-25 — Milestone S: "Paper & Ink" redesign
+- Owner asked for a clean, minimal, premium look inspired by the comic template (outlines, hard shadows, paper, one accent) without clutter. Split into S.1–S.4.
+
+## 2026-11-25 — Task S.1: Paper & Ink design system
+- New paper/ink/accent tokens, charcoal brand, deeper AA status colours + soft chips, surface/press/hard-shadow utilities; legacy vibrant utilities mapped to calm equivalents.
+- Contrast test caught 4 status colours below AA on soft chips — fixed. 173 tests green.
