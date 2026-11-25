@@ -11,3 +11,9 @@ Short chronological history of the project. Newest entries at the bottom.
 - No code written, no commits, nothing pushed. Waiting for owner approval of the plan.
 - Owner decision: **no deployment for now** — app runs on localhost only. Hosting will be decided later. Updated plan and Task 7.4 accordingly.
 - Owner approved the plan: Supabase backend, LocalStorage-first for Milestones 2–4, all suggested extras (Task 1.5 + Milestone 8), single `main` branch. Owner will create a new Supabase account and share keys at Milestone 5.
+- Committed Phase 0 docs (`a15b015`).
+
+## 2026-11-25 — Task 1.1: Initialize React + Vite + TypeScript
+- Scaffolded with create-vite 9.3.4 (React 19, Vite 8, TypeScript 7 strict, oxlint). Removed demo assets.
+- Added Vitest + React Testing Library with a smoke test, `npm run check` script, `.env` ignore rules, README.
+- `npm run check` all green; dev server verified on localhost:5173.

@@ -22,7 +22,7 @@ _Last updated: 2026-11-25_
 ## 2. Recommended architecture
 
 ### Frontend
-- **React 18 + Vite + TypeScript** (strict mode)
+- **React 19 + Vite 8 + TypeScript 7** (strict mode) — latest versions from `create-vite`
 - **Tailwind CSS** for responsive styling
 - **React Router** for pages (`/`, `/pending`, `/overdue`, `/completed`, `/archived`, `/teams/:id`, `/login`, `/register`)
 - **TanStack Query** for server-data caching and refresh (added in Milestone 5)
@@ -105,14 +105,14 @@ Full task list: see `TASK_TRACKER.md`. Database design: see `DATABASE_SCHEMA.md`
 
 | Level | Tool | Used for |
 |---|---|---|
-| Lint / types | ESLint + `tsc --noEmit` | every task |
+| Lint / types | oxlint (Vite's default linter) + `tsc -b` | every task |
 | Unit | Vitest | status/deadline logic, repositories, reducers |
 | Component | React Testing Library | forms, dialogs, views |
 | Database security | Vitest integration tests with 2–3 real test users against the Supabase **dev** project | RLS, RPCs, isolation (Milestones 5–6) |
 | End-to-end | Playwright (Chromium; mobile/tablet/desktop viewports) | main workflows (Milestone 7) |
 | Build | `vite build` | every task |
 
-Every task runs: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` before asking for commit approval.
+Every task runs `npm run check` (= lint + typecheck + test + build) before asking for commit approval.
 
 ## 6. My suggested extra features (optional — Milestone 8)
 

@@ -8,13 +8,13 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| 0.1 | Inspect repo, write PROJECT_PLAN, TASK_TRACKER, DATABASE_SCHEMA, DEVELOPMENT_LOG | P0 | Completed | N/A (docs only) | — | `docs(plan): add project plan, task tracker and schema design` | No |
+| 0.1 | Inspect repo, write PROJECT_PLAN, TASK_TRACKER, DATABASE_SCHEMA, DEVELOPMENT_LOG | P0 | Completed | N/A (docs only) | `a15b015` | `docs(plan): add project plan, task tracker and schema design` | No |
 
 ## Milestone 1 — Project Setup
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| 1.1 | Initialize React + Vite + TypeScript (strict), ESLint, Vitest + RTL with a smoke test, npm scripts (`lint`, `typecheck`, `test`, `build`) | P0 | Not Started | — | — | `feat(setup): initialize React Vite TypeScript project` | No |
+| 1.1 | Initialize React + Vite + TypeScript (strict), oxlint, Vitest + RTL with a smoke test, npm scripts (`lint`, `typecheck`, `test`, `build`, `check`) | P0 | Testing | Passed | — | `feat(setup): initialize React Vite TypeScript project` | No |
 | 1.2 | Configure Tailwind CSS, base styles, theme colours, fonts | P0 | Not Started | — | — | `feat(ui): configure Tailwind CSS` | No |
 | 1.3 | Create scalable folder structure (`app`, `features`, `components`, `lib`, `pages`, `types`, `supabase/`) + path aliases | P0 | Not Started | — | — | `chore(structure): create scalable project folder structure` | No |
 | 1.4 | Responsive layout: collapsible sidebar (mobile drawer), header, dashboard page, React Router routes | P0 | Not Started | — | — | `feat(ui): implement responsive dashboard layout` | No |
@@ -100,4 +100,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: added `PROJECT_PLAN.md`, `TASK_TRACKER.md`, `DATABASE_SCHEMA.md`, `DEVELOPMENT_LOG.md`.
 - Tests: not applicable (documentation only).
 - Plan approved by owner on 2026-11-25 (Supabase, LocalStorage-first, all extras, single `main` branch, localhost only).
-- Commit hash recorded in the table by the next task's commit. Pushed: No.
+- Commit: `a15b015`. Pushed: No.
+
+### 1.1 — Initialize React + Vite + TypeScript
+- Changed: scaffolded with create-vite 9.3.4 (`react-ts`): React 19.3, Vite 8.3, TypeScript 7.0 (strict), oxlint. Removed demo content. Added Vitest 4 + jsdom + React Testing Library + jest-dom, a smoke test, `check` script, `.env` ignore rules, README.
+- Tests: `npm run check` → lint passed (0 warnings), typecheck passed, 1/1 tests passed, build passed. Dev server served page on http://localhost:5173.
+- Failed: none.
+- Commit: waiting for approval. Pushed: No.
