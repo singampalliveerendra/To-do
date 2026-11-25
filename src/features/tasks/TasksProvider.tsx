@@ -42,18 +42,37 @@ export function TasksProvider({ repository, children }: TasksProviderProps) {
     [repository],
   )
 
+  const replaceTask = useCallback((task: Task) => {
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)))
+    return task
+  }, [])
+
   const updateTask = useCallback(
-    async (id: string, input: NewTaskInput) => {
-      const task = await repository.update(id, input)
-      setTasks((prev) => prev.map((t) => (t.id === id ? task : t)))
-      return task
+    async (id: string, input: NewTaskInput) => replaceTask(await repository.update(id, input)),
+    [repository, replaceTask],
+  )
+
+  const archiveTask = useCallback(
+    async (id: string) => replaceTask(await repository.archive(id)),
+    [repository, replaceTask],
+  )
+
+  const restoreTask = useCallback(
+    async (id: string) => replaceTask(await repository.restore(id)),
+    [repository, replaceTask],
+  )
+
+  const deleteTask = useCallback(
+    async (id: string) => {
+      await repository.delete(id)
+      setTasks((prev) => prev.filter((t) => t.id !== id))
     },
     [repository],
   )
 
   const value = useMemo(
-    () => ({ tasks, status, error, createTask, updateTask }),
-    [tasks, status, error, createTask, updateTask],
+    () => ({ tasks, status, error, createTask, updateTask, archiveTask, restoreTask, deleteTask }),
+    [tasks, status, error, createTask, updateTask, archiveTask, restoreTask, deleteTask],
   )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>

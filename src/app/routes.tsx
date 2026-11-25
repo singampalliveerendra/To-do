@@ -1,6 +1,7 @@
-import { Archive, CircleAlert, CircleCheckBig } from 'lucide-react'
+import { CircleAlert, CircleCheckBig } from 'lucide-react'
 import type { RouteObject } from 'react-router'
 import { AppLayout, type RouteHandle } from '@/layouts/AppLayout'
+import { ArchivedPage } from '@/pages/ArchivedPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PendingPage } from '@/pages/PendingPage'
@@ -44,9 +45,7 @@ export const routes: RouteObject[] = [
       {
         path: 'archived',
         handle: handle('Archived'),
-        element: (
-          <TaskViewPage icon={Archive} emptyTitle="No archived tasks" emptyText="Tasks you archive can be restored from here." />
-        ),
+        element: <ArchivedPage />,
       },
       { path: '*', element: <NotFoundPage />, handle: handle('Page not found') },
     ],

@@ -5,9 +5,11 @@ export interface Task {
   description: string
   createdAt: string
   updatedAt: string
+  /** When the task was archived (soft-deleted), or null if it is active. */
+  archivedAt: string | null
 }
 
-/** What the user fills in when creating a task. */
+/** What the user fills in when creating or editing a task. */
 export interface NewTaskInput {
   title: string
   description: string

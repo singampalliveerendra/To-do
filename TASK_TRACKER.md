@@ -25,8 +25,8 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
 | 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Completed | Passed (GitHub run ✅) | `6d0d59c` | `feat(tasks): implement task creation` | Yes |
-| 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Testing | Passed | — | `feat(tasks): add task editing functionality` | No |
-| 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Not Started | — | — | `feat(tasks): implement task deletion and archiving` | No |
+| 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Completed | Passed (GitHub run ✅) | `9b98e34` | `feat(tasks): add task editing functionality` | Yes |
+| 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Testing | Passed | — | `feat(tasks): implement task deletion and archiving` | No |
 | 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Not Started | — | — | `feat(tasks): add task completion functionality` | No |
 | 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Not Started | — | — | `feat(dashboard): display task details` | No |
 
@@ -142,4 +142,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: `TaskRepository.update()` + `TaskNotFoundError`; LocalStorage implementation validates, trims, keeps `createdAt`, bumps `updatedAt` (not bumped when nothing changed), keeps list order. `updateTask` in the tasks context. New `TaskCard` (pencil Edit button, "Edited <time>" label) and `EditTaskDialog` (reuses `TaskForm`, pre-filled, resets each time it opens). Test fakes now spread a real repository so they implement every method.
 - Tests: `npm run check` → lint, typecheck, 61/61 tests, build all passed. Browser check (desktop + mobile): edit pre-filled, saved, survived refresh; no console errors; no horizontal overflow.
 - Failed: none (two old test fakes needed the new `update` method — fixed).
+- Commit: `9b98e34`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### 2.3 — Archiving and deletion
+- Changed: `Task.archivedAt`; old saved tasks load as active (`archivedAt: null`). Repository `archive` (soft delete, keeps all details, keeps first archive time), `restore`, and `delete` (only for archived tasks — `TaskNotArchivedError` otherwise). Context actions `archiveTask` / `restoreTask` / `deleteTask`. New `ConfirmDialog` (Cancel focused first, busy state, error stays visible). `Modal` honours `data-autofocus`. `TaskCard` shows Edit + Archive for active tasks, Restore + Delete for archived ones, plus an "Archived <time>" label. New Archived page; Dashboard/Pending show only active tasks.
+- Tests: `npm run check` → lint, typecheck, 82/82 tests, build all passed. Browser check (desktop + mobile): archive → confirm → Archived page after reload → delete → confirm → still gone after refresh; no console errors; no overflow.
+- Failed / fixed: two existing tests compared whole task objects without the new `archivedAt` field — updated them and added a test for loading older saved data.
 - Commit: waiting for approval. Pushed: No.

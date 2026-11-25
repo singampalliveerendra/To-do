@@ -48,3 +48,9 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 2.2: Task editing
 - Added repository `update`, Edit button on each task card, pre-filled edit dialog, "Edited" timestamp.
 - 61 tests green; browser check on desktop and mobile passed.
+- Committed and pushed Task 2.2 (`9b98e34`); CI green.
+
+## 2026-11-25 — Task 2.3: Archiving and deletion
+- Two-step safety: tasks are archived first (soft delete, restorable); only archived tasks can be permanently deleted. Both actions ask for confirmation with Cancel focused.
+- Archived page with Restore / Delete permanently. Older saved data migrates automatically.
+- 82 tests green; browser check on desktop and mobile passed.

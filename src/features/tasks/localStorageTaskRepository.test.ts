@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createLocalStorageTaskRepository, TASKS_STORAGE_KEY } from './localStorageTaskRepository'
-import { TaskNotFoundError } from './taskRepository'
+import { TaskNotArchivedError, TaskNotFoundError } from './taskRepository'
 import { TaskValidationError } from './taskValidation'
 
 function makeRepo(start = new Date('2026-11-25T10:00:00.000Z')) {
@@ -28,6 +28,7 @@ describe('createLocalStorageTaskRepository', () => {
       description: 'Q4 numbers',
       createdAt: '2026-11-25T10:01:00.000Z',
       updatedAt: '2026-11-25T10:01:00.000Z',
+      archivedAt: null,
     })
   })
 
@@ -73,9 +74,22 @@ describe('createLocalStorageTaskRepository', () => {
       description: '',
       createdAt: '2026-11-25T09:00:00.000Z',
       updatedAt: '2026-11-25T09:00:00.000Z',
+      archivedAt: null,
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([valid, { id: 1 }, null, 'text']))
     expect(await makeRepo().list()).toEqual([valid])
+  })
+
+  it('loads tasks saved before archiving existed as active (archivedAt: null)', async () => {
+    const legacy = {
+      id: 'old',
+      title: 'Saved by v2.2',
+      description: '',
+      createdAt: '2026-11-25T09:00:00.000Z',
+      updatedAt: '2026-11-25T09:00:00.000Z',
+    }
+    window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([legacy]))
+    expect(await makeRepo().list()).toEqual([{ ...legacy, archivedAt: null }])
   })
 
   it('reports a friendly error when storage is full', async () => {
@@ -143,6 +157,69 @@ describe('createLocalStorageTaskRepository', () => {
       await expect(makeRepo().update('missing', { title: 'x', description: '' })).rejects.toBeInstanceOf(
         TaskNotFoundError,
       )
+    })
+  })
+
+  describe('archive, restore and delete', () => {
+    it('archive sets archivedAt and keeps every other detail', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Old task', description: 'keep this' })
+
+      const archived = await repo.archive(created.id)
+
+      expect(archived).toEqual({ ...created, archivedAt: '2026-11-25T10:02:00.000Z' })
+      // Still stored (soft delete), not removed.
+      expect(await repo.list()).toEqual([archived])
+    })
+
+    it('archiving twice keeps the first archive time', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'x', description: '' })
+      const first = await repo.archive(created.id)
+      const second = await repo.archive(created.id)
+      expect(second.archivedAt).toBe(first.archivedAt)
+    })
+
+    it('restore clears archivedAt and keeps every other detail', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Back again', description: 'notes' })
+      await repo.archive(created.id)
+
+      expect(await repo.restore(created.id)).toEqual(created)
+    })
+
+    it('archive/restore survive a refresh', async () => {
+      const repo = makeRepo()
+      const a = await repo.create({ title: 'A', description: '' })
+      await repo.archive(a.id)
+
+      const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+      expect((await afterRefresh.list())[0].archivedAt).not.toBeNull()
+    })
+
+    it('refuses to delete a task that is not archived', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Active', description: '' })
+
+      await expect(repo.delete(created.id)).rejects.toBeInstanceOf(TaskNotArchivedError)
+      expect(await repo.list()).toHaveLength(1)
+    })
+
+    it('permanently deletes an archived task and nothing else', async () => {
+      const repo = makeRepo()
+      const keep = await repo.create({ title: 'Keep', description: '' })
+      const remove = await repo.create({ title: 'Remove', description: '' })
+      await repo.archive(remove.id)
+
+      await repo.delete(remove.id)
+
+      expect(await repo.list()).toEqual([keep])
+      const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+      expect(await afterRefresh.list()).toEqual([keep])
+    })
+
+    it.each(['archive', 'restore', 'delete'] as const)('%s throws TaskNotFoundError for an unknown id', async (method) => {
+      await expect(makeRepo()[method]('missing')).rejects.toBeInstanceOf(TaskNotFoundError)
     })
   })
 })

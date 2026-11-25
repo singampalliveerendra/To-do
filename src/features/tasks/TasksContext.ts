@@ -8,6 +8,10 @@ export interface TasksContextValue {
   error: string | null
   createTask: (input: NewTaskInput) => Promise<Task>
   updateTask: (id: string, input: NewTaskInput) => Promise<Task>
+  archiveTask: (id: string) => Promise<Task>
+  restoreTask: (id: string) => Promise<Task>
+  /** Permanently deletes an archived task. */
+  deleteTask: (id: string) => Promise<void>
 }
 
 export const TasksContext = createContext<TasksContextValue | null>(null)

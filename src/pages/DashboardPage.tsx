@@ -2,15 +2,16 @@ import { Link } from 'react-router'
 import { NAV_ITEMS } from '@/app/navigation'
 import { TaskList } from '@/features/tasks/TaskList'
 import { useTasks } from '@/features/tasks/TasksContext'
+import { selectActiveTasks } from '@/features/tasks/taskSelectors'
 import { cn } from '@/lib/cn'
 
 /** Summary cards link to each status view. */
 const SUMMARY_ITEMS = NAV_ITEMS.filter((item) => item.to !== '/' && item.to !== '/archived')
 
 export function DashboardPage() {
-  const { tasks } = useTasks()
+  const tasks = selectActiveTasks(useTasks().tasks)
 
-  // Until deadlines and completion exist (Milestones 2.4 / 3 / 4), every task is pending.
+  // Until deadlines and completion exist (Milestones 2.4 / 3 / 4), every active task is pending.
   const counts: Record<string, number> = {
     Pending: tasks.length,
     Overdue: 0,

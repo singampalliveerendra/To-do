@@ -22,8 +22,8 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
     if (!open) return
     const opener = document.activeElement as HTMLElement | null
 
-    // Focus the first field (or the panel) when opening.
-    const firstField = panelRef.current?.querySelector<HTMLElement>('input, textarea, select')
+    // Focus an element marked `data-autofocus`, else the first field, else the panel.
+    const firstField = panelRef.current?.querySelector<HTMLElement>('[data-autofocus], input, textarea, select')
     ;(firstField ?? panelRef.current)?.focus()
 
     const onKeyDown = (event: KeyboardEvent) => {
