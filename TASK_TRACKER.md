@@ -50,7 +50,8 @@ _Goal: calm, minimal, premium UI inspired by the comic look of the SNACCOON temp
 | S.1 | Design system: paper/ink/accent tokens, calm charcoal brand scale, deeper AA status colours + soft chip backgrounds, `surface` / `btn-press` / hard-shadow / `paper-dots` utilities, legacy vibrant utilities re-pointed to calm equivalents | P1 | Completed | Passed (GitHub run ✅) | `dffb965` | `feat(ui): introduce paper and ink design system` | Yes |
 | S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Completed | Passed (GitHub run ✅) | `1bec9b6` | `feat(ui): restyle layout with paper and ink` | Yes |
 | S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Completed | Passed (GitHub run ✅) | `3542c77` | `feat(ui): restyle dashboard, progress and task cards` | Yes |
-| S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Testing | Passed | — | `feat(ui): restyle task forms, details and dialogs` | No |
+| S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Completed | Passed locally; GitHub run ❌ (flaky test, see S.4-fix) | `33c3fbe` | `feat(ui): restyle task forms, details and dialogs` | Yes |
+| S.4-fix | Fix flaky banner-progress test (asserted before tasks finished loading) | P0 | Testing | Passed (15/15 isolated runs) | — | `test(tasks): wait for loaded tasks in progress bar test` | No |
 
 ## Milestone 3 — Deadlines & Progress Tracking
 
@@ -227,4 +228,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: `Modal` — white sheet with ink outline + hard shadow, ink/40 backdrop, bottom sheet with grab handle on phones, centred card on larger screens, slide-up entrance. `TaskForm` — outlined fields with yellow focus glow (red when invalid), clear labels, error box, yellow pressable submit + white Cancel. `ConfirmDialog` — calm copy, white Cancel, ink (default) or red (danger) pressable confirm. `TaskStatusBadge` — soft chip with dot. `TaskDetailsPage` — `surface` card, display title, outlined pressable actions (Mark complete in yellow), small-caps section labels, dashed History timeline with status-coloured dots. `NotFoundPage` — tilted yellow 404 tag + pressable back button. Remaining slate colours replaced with the neutral scale. **Removed** all legacy vibrant styles: gradient/glass/glow/card utilities, pop colours, `rounded-4xl`, and unused animations (float, blob, wiggle, gradient-pan, spin-slow).
 - Tests: `designTokens.test.ts` now asserts the vibrant theme is gone, white text on filled buttons/checkbox is AA, and grey helper text is AA on white and paper. `npm run check` → lint, typecheck, 171/171 tests, build passed (built CSS 34.8 kB). Browser: new-task dialog (desktop + mobile bottom sheet), validation, edit, complete, archive, delete confirm, details page, 404 — no overflow, no console errors.
 - Failed / fixed: a shell quoting slip in my edit script stopped it before any change; redone with the editor.
+- Commit: `33c3fbe`. Pushed: Yes (2026-11-25). **GitHub Actions run ❌** — see S.4-fix.
+
+### S.4-fix — Flaky progress-bar test
+- Cause: in S.3 the completion test switched from waiting for the old ring by its exact label to finding the progress bar and checking its value immediately. The bar exists from the first render ("0 of 0") while tasks are still loading, so on GitHub's slower runner the check ran before the 2 tasks loaded. It passed locally by timing luck.
+- Fix: `completeTask.test.tsx` waits (`waitFor`) for the expected value before and after ticking. No app code changed.
+- Tests: the test passed 15/15 isolated runs; `npm run check` → 171/171, build passed.
 - Commit: waiting for approval. Pushed: No.

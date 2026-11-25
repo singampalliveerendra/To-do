@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { renderApp } from '@/test/renderApp'
@@ -134,10 +134,12 @@ describe('completion micro-interactions', () => {
     await repo.create({ title: 'One', description: '' })
     await repo.create({ title: 'Two', description: '' })
     renderApp('/', { repository: repo })
+    // The bar is on screen immediately ("0 of 0") while tasks are still loading,
+    // so wait for the loaded value instead of checking right away.
     const progress = await screen.findByRole('progressbar', { name: 'Tasks completed' })
-    expect(progress).toHaveAttribute('aria-valuetext', '0 of 2 tasks completed (0%)')
+    await waitFor(() => expect(progress).toHaveAttribute('aria-valuetext', '0 of 2 tasks completed (0%)'))
 
     await user.click(screen.getByRole('checkbox', { name: 'Mark "One" as complete' }))
-    expect(progress).toHaveAttribute('aria-valuetext', '1 of 2 tasks completed (50%)')
+    await waitFor(() => expect(progress).toHaveAttribute('aria-valuetext', '1 of 2 tasks completed (50%)'))
   })
 })

@@ -107,3 +107,4 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task S.4: Forms, dialogs, details and clean-up
 - Paper & Ink dialogs (mobile bottom sheet), outlined form fields with yellow focus, calm confirmations, restyled details page and 404. Removed every legacy vibrant style.
 - 171 tests green. **Milestone S complete** once committed. Next: Milestone 3 (deadlines).
+- Committed and pushed Task S.4 (`33c3fbe`), but the GitHub Actions run failed: a test introduced in S.3 checked the progress bar before tasks had loaded (timing-dependent, passed locally). Fixed the test to wait for the loaded value (S.4-fix); 15/15 repeated runs green.
