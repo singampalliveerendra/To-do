@@ -1,5 +1,7 @@
 # To-Do — Collaborative Task Management
 
+[![CI](https://github.com/singampalliveerendra/To-do/actions/workflows/ci.yml/badge.svg)](https://github.com/singampalliveerendra/To-do/actions/workflows/ci.yml)
+
 A to-do app with deadlines, progress checkpoints, and team workspaces.
 Built with React, Vite, TypeScript, Tailwind CSS and Supabase.
 
@@ -24,6 +26,11 @@ npm run dev        # http://localhost:5173
 | `npm test` | Run unit/component tests (Vitest) |
 | `npm run build` | Production build into `dist/` |
 | `npm run check` | All of the above (lint + typecheck + test + build) |
+
+## Continuous integration
+
+Every push and pull request to `main` runs lint, typecheck, tests and build on GitHub Actions
+(`.github/workflows/ci.yml`). Results show as ✅ / ❌ next to each commit on GitHub.
 
 ## Project structure
 

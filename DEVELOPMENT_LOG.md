@@ -32,3 +32,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 1.4: Responsive dashboard layout
 - Added React Router 7 (v8 requires Node 22), lucide-react icons, app layout with sidebar/mobile drawer, header, dashboard, status view placeholders and 404 page.
 - 15 tests green; verified with Playwright screenshots on mobile, tablet and desktop (no overflow, no console errors).
+- Committed and pushed Task 1.4 (`c0e33e7`).
+
+## 2026-11-25 — Task 1.5: GitHub Actions CI
+- Added CI workflow (lint, typecheck, test, build on Node 20) and README badge.
+- Simulated the pipeline in a clean clone: all steps passed.
