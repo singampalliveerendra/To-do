@@ -6,6 +6,7 @@ import { CompletedPage } from '@/pages/CompletedPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PendingPage } from '@/pages/PendingPage'
+import { TaskDetailsPage } from '@/pages/TaskDetailsPage'
 import { TaskViewPage } from '@/pages/TaskViewPage'
 
 const handle = (title: string): RouteHandle => ({ title })
@@ -42,6 +43,7 @@ export const routes: RouteObject[] = [
         handle: handle('Archived'),
         element: <ArchivedPage />,
       },
+      { path: 'tasks/:taskId', element: <TaskDetailsPage />, handle: handle('Task details') },
       { path: '*', element: <NotFoundPage />, handle: handle('Page not found') },
     ],
   },

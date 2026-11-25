@@ -27,8 +27,8 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 | 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Completed | Passed (GitHub run ✅) | `6d0d59c` | `feat(tasks): implement task creation` | Yes |
 | 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Completed | Passed (GitHub run ✅) | `9b98e34` | `feat(tasks): add task editing functionality` | Yes |
 | 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Completed | Passed (GitHub run ✅) | `ef4208d` | `feat(tasks): implement task deletion and archiving` | Yes |
-| 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Testing | Passed | — | `feat(tasks): add task completion functionality` | No |
-| 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Not Started | — | — | `feat(dashboard): display task details` | No |
+| 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Completed | Passed (GitHub run ✅) | `fd69879` | `feat(tasks): add task completion functionality` | Yes |
+| 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Testing | Passed | — | `feat(dashboard): display task details` | No |
 
 ## Milestone 3 — Deadlines & Progress Tracking
 
@@ -154,4 +154,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: `Task.completedAt` (older saved tasks load as not complete). Repository `complete` (records exact time, keeps first time if repeated, does not change `updatedAt`) and `reopen`. Context `completeTask` / `reopenTask`. Selectors `selectPendingTasks` / `selectCompletedTasks` (archived tasks excluded). Round checkbox on active task cards (accessible `role="checkbox"`, disabled while saving); completed cards show a struck-through title and a green "Completed <time>" label. New Completed page; Pending page shows only unfinished tasks; Dashboard Pending/Completed counters wired.
 - Tests: `npm run check` → lint, typecheck, 101/101 tests, build all passed. Browser check (desktop + mobile): complete → refresh → still complete, counters 2/1, Completed page correct; no console errors; no overflow.
 - Failed / fixed: three repository tests compared whole task objects without `completedAt` — updated. (A shell quoting slip in my own edit script was caught before any test ran; edits redone with the editor.)
+- Commit: `fd69879`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### 2.5 — Task details
+- Changed: new route `/tasks/:taskId` with `TaskDetailsPage`: status badge, full description (line breaks kept, placeholder when empty), History timeline (created / last edited / completed / archived, oldest first), action buttons (Mark complete / Reopen, Edit, Archive, Restore, Delete permanently), Back link that returns to the page the task was opened from, "Task not found" state, and a redirect to Archived after deleting. Task card titles are now links. Extracted shared `useTaskActions` hook (actions + edit/confirm dialogs) used by both the list and the details page; `TaskList` no longer needs a `variant` prop. New `TaskStatusBadge`.
+- Tests: `npm run check` → lint, typecheck, 112/112 tests, build all passed (all 101 earlier tests still green after the refactor). Browser check (desktop + mobile): open from card, mark complete, refresh on the details URL; no console errors; no overflow.
+- Failed / fixed: my browser script waited on the hidden mobile sidebar link instead of the status badge — script fixed, app unchanged.
 - Commit: waiting for approval. Pushed: No.

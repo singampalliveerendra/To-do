@@ -12,7 +12,6 @@ export function ArchivedPage() {
       </p>
       <TaskList
         tasks={selectArchivedTasks(tasks)}
-        variant="archived"
         emptyIcon={Archive}
         emptyTitle="No archived tasks"
         emptyText="Tasks you archive can be restored from here."

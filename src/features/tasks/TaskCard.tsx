@@ -1,5 +1,6 @@
 import { Archive, ArchiveRestore, Check, Pencil, Trash2, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
+import { Link, useLocation } from 'react-router'
 import { cn } from '@/lib/cn'
 import { formatDateTime } from '@/lib/datetime'
 import type { Task } from '@/types/task'
@@ -49,6 +50,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onArchive, onRestore,
   const isDone = task.completedAt !== null
   const name = `"${task.title}"`
   const [toggling, setToggling] = useState(false)
+  const location = useLocation()
 
   async function toggle() {
     if (!onToggleComplete || toggling) return
@@ -94,7 +96,13 @@ export function TaskCard({ task, onToggleComplete, onEdit, onArchive, onRestore,
               !isDone && (task.archivedAt ? 'text-slate-600' : 'text-slate-900'),
             )}
           >
-            {task.title}
+            <Link
+              to={`/tasks/${task.id}`}
+              state={{ from: location.pathname }}
+              className="rounded-sm hover:text-brand-700 hover:underline"
+            >
+              {task.title}
+            </Link>
           </h3>
           {task.description && (
             <p className="mt-1 line-clamp-2 text-sm break-words whitespace-pre-line text-slate-600">

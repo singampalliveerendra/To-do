@@ -59,3 +59,9 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 2.4: Task completion
 - Added completion checkbox, `completedAt` with exact time, reopen, Completed page, Pending/Completed counters.
 - 101 tests green; browser check on desktop and mobile passed.
+- Committed and pushed Task 2.4 (`fd69879`); CI green.
+
+## 2026-11-25 — Task 2.5: Task details
+- Added task details page (`/tasks/:id`) with status badge, full description, history timeline and all actions; card titles link to it.
+- Refactored task actions into a shared `useTaskActions` hook used by list and details page.
+- 112 tests green; browser check on desktop and mobile passed. Owner given the local URL (http://localhost:5173) to review.
