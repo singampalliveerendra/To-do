@@ -22,3 +22,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 1.2: Configure Tailwind CSS
 - Added Tailwind CSS 4.3 via the Vite plugin, theme tokens (brand + task status colours), Inter font, and base styles.
 - `npm run check` all green (2 tests); built CSS verified.
+- Committed and pushed Task 1.2 (`7c08e4f`).
+
+## 2026-11-25 — Task 1.3: Scalable folder structure
+- Created feature-based folder layout, moved App to `src/app/`, added `@/` alias and `cn()` helper with tests, documented structure in README.
+- `npm run check` all green (5 tests).
