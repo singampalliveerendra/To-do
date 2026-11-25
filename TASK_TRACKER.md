@@ -16,8 +16,8 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 |---|---|---|---|---|---|---|---|
 | 1.1 | Initialize React + Vite + TypeScript (strict), oxlint, Vitest + RTL with a smoke test, npm scripts (`lint`, `typecheck`, `test`, `build`, `check`) | P0 | Completed | Passed | `fb82c5d` | `feat(setup): initialize React Vite TypeScript project` | Yes |
 | 1.2 | Configure Tailwind CSS, base styles, theme colours, fonts | P0 | Completed | Passed | `7c08e4f` | `feat(ui): configure Tailwind CSS` | Yes |
-| 1.3 | Create scalable folder structure (`app`, `features`, `components`, `lib`, `pages`, `types`, `supabase/`) + path aliases | P0 | Testing | Passed | — | `chore(structure): create scalable project folder structure` | No |
-| 1.4 | Responsive layout: collapsible sidebar (mobile drawer), header, dashboard page, React Router routes | P0 | Not Started | — | — | `feat(ui): implement responsive dashboard layout` | No |
+| 1.3 | Create scalable folder structure (`app`, `features`, `components`, `lib`, `pages`, `types`, `supabase/`) + path aliases | P0 | Completed | Passed | `b578373` | `chore(structure): create scalable project folder structure` | Yes |
+| 1.4 | Responsive layout: collapsible sidebar (mobile drawer), header, dashboard page, React Router routes | P0 | Testing | Passed | — | `feat(ui): implement responsive dashboard layout` | No |
 | 1.5 | GitHub Actions CI: lint + typecheck + test + build on push/PR | P1 | Not Started | — | — | `ci: add GitHub Actions workflow for lint, test and build` | No |
 
 ## Milestone 2 — Core Task Management
@@ -118,4 +118,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: created `src/app`, `components`, `features/{tasks,progress,auth,teams}`, `layouts`, `lib`, `pages`, `types`, plus `supabase/migrations` and `tests/e2e` (empty folders kept with `.gitkeep`). Moved `App` into `src/app/`. Added `@/` import alias (Vite + tsconfig), a `cn()` class-name helper in `src/lib/` with tests, a safe root-element check in `main.tsx`, and a "Project structure" section in the README.
 - Tests: `npm run check` → lint passed, typecheck passed, 5/5 tests passed (2 files), build passed. Dev server resolved `@/app/App` with no errors.
 - Failed: none.
+- Commit: `b578373`. Pushed: Yes (2026-11-25).
+
+### 1.4 — Responsive dashboard layout
+- Changed: added React Router 7.18 (v8 needs Node 22; we have Node 20) and lucide-react icons. New `AppLayout` (sticky header with page title, skip-to-content link), `Sidebar` (fixed on desktop ≥1024px; slide-out drawer with overlay on mobile/tablet; closes on Escape, overlay click, close button or link click), `navigation.ts` (single list of nav links), routes for `/`, `/pending`, `/overdue`, `/completed`, `/archived` and a 404 page. Dashboard shows summary cards (0 for now) and an empty state. Browser tab title follows the page.
+- Tests: `npm run check` → lint passed, typecheck passed, 15/15 tests passed (routing, active link, 404, mobile menu open/close), build passed. Playwright screenshots at 390×844 (mobile), 820×1180 (tablet), 1440×900 (desktop): no horizontal overflow, no console errors.
+- Failed: one test expectation was wrong on the first run (expected tab title for the dashboard); fixed the test.
 - Commit: waiting for approval. Pushed: No.

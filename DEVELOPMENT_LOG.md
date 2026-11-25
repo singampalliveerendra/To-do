@@ -27,3 +27,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task 1.3: Scalable folder structure
 - Created feature-based folder layout, moved App to `src/app/`, added `@/` alias and `cn()` helper with tests, documented structure in README.
 - `npm run check` all green (5 tests).
+- Committed and pushed Task 1.3 (`b578373`).
+
+## 2026-11-25 — Task 1.4: Responsive dashboard layout
+- Added React Router 7 (v8 requires Node 22), lucide-react icons, app layout with sidebar/mobile drawer, header, dashboard, status view placeholders and 404 page.
+- 15 tests green; verified with Playwright screenshots on mobile, tablet and desktop (no overflow, no console errors).
