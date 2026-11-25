@@ -10,4 +10,16 @@ export interface TaskRepository {
   list(): Promise<Task[]>
   /** Validates, saves and returns the new task. */
   create(input: NewTaskInput): Promise<Task>
+  /**
+   * Validates and saves new title/description for an existing task.
+   * Throws `TaskNotFoundError` if the task no longer exists.
+   */
+  update(id: string, input: NewTaskInput): Promise<Task>
+}
+
+export class TaskNotFoundError extends Error {
+  constructor(id: string) {
+    super(`This task no longer exists (it may have been deleted). [${id}]`)
+    this.name = 'TaskNotFoundError'
+  }
 }

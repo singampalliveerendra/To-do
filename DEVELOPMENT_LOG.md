@@ -43,3 +43,8 @@ Short chronological history of the project. Newest entries at the bottom.
 - Added task type, validation, LocalStorage repository, tasks context, Modal, TaskForm, header "New task" button, task list on Dashboard/Pending.
 - Browser check found the dialog trapped inside the header (backdrop-blur containing block); fixed with a portal + regression test.
 - 47 tests green; tasks survive page refresh.
+- Committed and pushed Task 2.1 (`6d0d59c`); CI green.
+
+## 2026-11-25 — Task 2.2: Task editing
+- Added repository `update`, Edit button on each task card, pre-filled edit dialog, "Edited" timestamp.
+- 61 tests green; browser check on desktop and mobile passed.

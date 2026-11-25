@@ -81,7 +81,7 @@ describe('creating a task', () => {
     let release!: () => void
     const gate = new Promise<void>((resolve) => (release = resolve))
     const slowRepo: TaskRepository = {
-      list: () => repo.list(),
+      ...repo,
       create: vi.fn(async (input) => {
         await gate // simulate a slow save
         return repo.create(input)
@@ -105,7 +105,7 @@ describe('creating a task', () => {
   it('shows an error and keeps the dialog open when saving fails', async () => {
     const user = userEvent.setup()
     const failingRepo: TaskRepository = {
-      list: async () => [],
+      ...createLocalStorageTaskRepository({ storage: window.localStorage }),
       create: async () => {
         throw new Error('Could not save your task. Your browser storage may be full or disabled.')
       },

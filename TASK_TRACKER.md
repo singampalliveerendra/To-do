@@ -24,8 +24,8 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Testing | Passed | — | `feat(tasks): implement task creation` | No |
-| 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Not Started | — | — | `feat(tasks): add task editing functionality` | No |
+| 2.1 | Task type, `TaskRepository` interface + LocalStorage implementation, create-task form (title required, description) | P0 | Completed | Passed (GitHub run ✅) | `6d0d59c` | `feat(tasks): implement task creation` | Yes |
+| 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Testing | Passed | — | `feat(tasks): add task editing functionality` | No |
 | 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Not Started | — | — | `feat(tasks): implement task deletion and archiving` | No |
 | 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Not Started | — | — | `feat(tasks): add task completion functionality` | No |
 | 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Not Started | — | — | `feat(dashboard): display task details` | No |
@@ -136,4 +136,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: `Task` / `NewTaskInput` types; validation (title required, ≤200 chars; description ≤5000; whitespace trimmed); `TaskRepository` interface + LocalStorage implementation (key `todo.tasks.v1`, newest first, ignores corrupted data, friendly error when storage is full); `TasksProvider` + `useTasks`; reusable `Modal` (portal, Escape/backdrop close, focus handling) and `TaskForm` (inline errors, character counter, double-submit guard); "New task" button in the header; task list on Dashboard and Pending page; Pending counter wired.
 - Tests: `npm run check` → lint, typecheck, 47/47 tests, build all passed. Browser check (Playwright): created 2 tasks, refreshed page, both still there; no console errors; no horizontal overflow on mobile.
 - Failed / fixed: browser screenshots showed the dialog stuck at the top of the screen (header `backdrop-blur` traps `position: fixed`). Fixed by rendering the Modal through a portal into `<body>`; added a regression test.
+- Commit: `6d0d59c`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### 2.2 — Task editing
+- Changed: `TaskRepository.update()` + `TaskNotFoundError`; LocalStorage implementation validates, trims, keeps `createdAt`, bumps `updatedAt` (not bumped when nothing changed), keeps list order. `updateTask` in the tasks context. New `TaskCard` (pencil Edit button, "Edited <time>" label) and `EditTaskDialog` (reuses `TaskForm`, pre-filled, resets each time it opens). Test fakes now spread a real repository so they implement every method.
+- Tests: `npm run check` → lint, typecheck, 61/61 tests, build all passed. Browser check (desktop + mobile): edit pre-filled, saved, survived refresh; no console errors; no horizontal overflow.
+- Failed: none (two old test fakes needed the new `update` method — fixed).
 - Commit: waiting for approval. Pushed: No.

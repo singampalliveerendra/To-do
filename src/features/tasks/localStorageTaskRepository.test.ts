@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createLocalStorageTaskRepository, TASKS_STORAGE_KEY } from './localStorageTaskRepository'
+import { TaskNotFoundError } from './taskRepository'
 import { TaskValidationError } from './taskValidation'
 
 function makeRepo(start = new Date('2026-11-25T10:00:00.000Z')) {
@@ -86,5 +87,62 @@ describe('createLocalStorageTaskRepository', () => {
     } as unknown as Storage
     const repo = createLocalStorageTaskRepository({ storage: fullStorage })
     await expect(repo.create({ title: 'x', description: '' })).rejects.toThrow(/browser storage may be full/)
+  })
+
+  describe('update', () => {
+    it('changes title and description, bumps updatedAt and keeps createdAt', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Draft', description: 'old notes' })
+
+      const updated = await repo.update(created.id, { title: '  Final report ', description: ' new notes ' })
+
+      expect(updated).toEqual({
+        ...created,
+        title: 'Final report',
+        description: 'new notes',
+        updatedAt: '2026-11-25T10:02:00.000Z',
+      })
+      expect(updated.createdAt).toBe('2026-11-25T10:01:00.000Z')
+    })
+
+    it('persists the change across a refresh', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Before', description: '' })
+      await repo.update(created.id, { title: 'After', description: '' })
+
+      const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+      expect((await afterRefresh.list()).map((t) => t.title)).toEqual(['After'])
+    })
+
+    it('does not touch other tasks or change list order', async () => {
+      const repo = makeRepo()
+      const first = await repo.create({ title: 'First', description: '' })
+      await repo.create({ title: 'Second', description: '' })
+
+      await repo.update(first.id, { title: 'First (edited)', description: '' })
+
+      expect((await repo.list()).map((t) => t.title)).toEqual(['Second', 'First (edited)'])
+    })
+
+    it('keeps updatedAt when nothing actually changed', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Same', description: 'text' })
+      const result = await repo.update(created.id, { title: ' Same ', description: 'text' })
+      expect(result.updatedAt).toBe(created.updatedAt)
+    })
+
+    it('rejects invalid input and leaves the task unchanged', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Keep me', description: '' })
+
+      await expect(repo.update(created.id, { title: ' ', description: '' })).rejects.toBeInstanceOf(TaskValidationError)
+      expect(await repo.list()).toEqual([created])
+    })
+
+    it('throws TaskNotFoundError for an unknown id', async () => {
+      await expect(makeRepo().update('missing', { title: 'x', description: '' })).rejects.toBeInstanceOf(
+        TaskNotFoundError,
+      )
+    })
   })
 })

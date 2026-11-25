@@ -42,7 +42,19 @@ export function TasksProvider({ repository, children }: TasksProviderProps) {
     [repository],
   )
 
-  const value = useMemo(() => ({ tasks, status, error, createTask }), [tasks, status, error, createTask])
+  const updateTask = useCallback(
+    async (id: string, input: NewTaskInput) => {
+      const task = await repository.update(id, input)
+      setTasks((prev) => prev.map((t) => (t.id === id ? task : t)))
+      return task
+    },
+    [repository],
+  )
+
+  const value = useMemo(
+    () => ({ tasks, status, error, createTask, updateTask }),
+    [tasks, status, error, createTask, updateTask],
+  )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>
 }

@@ -1,7 +1,9 @@
 import { ListTodo, LoaderCircle } from 'lucide-react'
+import { useCallback, useState } from 'react'
 import { EmptyState } from '@/components/EmptyState'
-import { formatDateTime } from '@/lib/datetime'
 import type { Task } from '@/types/task'
+import { EditTaskDialog } from './EditTaskDialog'
+import { TaskCard } from './TaskCard'
 import { useTasks } from './TasksContext'
 
 interface TaskListProps {
@@ -16,6 +18,9 @@ export function TaskList({
   emptyText = 'Click “New task” to add your first one.',
 }: TaskListProps) {
   const { status, error } = useTasks()
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  // Stable reference so the dialog does not re-run its open/focus effect on every render.
+  const closeEditor = useCallback(() => setEditingTask(null), [])
 
   if (status === 'loading') {
     return (
@@ -42,20 +47,15 @@ export function TaskList({
   }
 
   return (
-    <ul className="space-y-3" aria-label="Tasks">
-      {tasks.map((task) => (
-        <li key={task.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <h3 className="font-medium break-words text-slate-900">{task.title}</h3>
-          {task.description && (
-            <p className="mt-1 line-clamp-2 text-sm break-words whitespace-pre-line text-slate-600">
-              {task.description}
-            </p>
-          )}
-          <p className="mt-2 text-xs text-slate-400">
-            Created <time dateTime={task.createdAt}>{formatDateTime(task.createdAt)}</time>
-          </p>
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="space-y-3" aria-label="Tasks">
+        {tasks.map((task) => (
+          <li key={task.id}>
+            <TaskCard task={task} onEdit={setEditingTask} />
+          </li>
+        ))}
+      </ul>
+      <EditTaskDialog task={editingTask} onClose={closeEditor} />
+    </>
   )
 }

@@ -1,5 +1,5 @@
 import type { Task } from '@/types/task'
-import type { TaskRepository } from './taskRepository'
+import { TaskNotFoundError, type TaskRepository } from './taskRepository'
 import { hasErrors, normalizeTaskInput, TaskValidationError, validateTaskInput } from './taskValidation'
 
 export const TASKS_STORAGE_KEY = 'todo.tasks.v1'
@@ -70,6 +70,25 @@ export function createLocalStorageTaskRepository({
       }
       write([task, ...read()])
       return task
+    },
+
+    async update(id, input) {
+      const errors = validateTaskInput(input)
+      if (hasErrors(errors)) throw new TaskValidationError(errors)
+
+      const tasks = read()
+      const index = tasks.findIndex((t) => t.id === id)
+      if (index === -1) throw new TaskNotFoundError(id)
+
+      const existing = tasks[index]
+      const { title, description } = normalizeTaskInput(input)
+      // Nothing changed → keep the original "last updated" time.
+      if (existing.title === title && existing.description === description) return existing
+
+      const updated: Task = { ...existing, title, description, updatedAt: now().toISOString() }
+      tasks[index] = updated
+      write(tasks)
+      return updated
     },
   }
 }

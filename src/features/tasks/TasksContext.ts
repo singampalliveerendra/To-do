@@ -7,6 +7,7 @@ export interface TasksContextValue {
   /** Message when loading failed. */
   error: string | null
   createTask: (input: NewTaskInput) => Promise<Task>
+  updateTask: (id: string, input: NewTaskInput) => Promise<Task>
 }
 
 export const TasksContext = createContext<TasksContextValue | null>(null)
