@@ -47,8 +47,8 @@ _Goal: calm, minimal, premium UI inspired by the comic look of the SNACCOON temp
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| S.1 | Design system: paper/ink/accent tokens, calm charcoal brand scale, deeper AA status colours + soft chip backgrounds, `surface` / `btn-press` / hard-shadow / `paper-dots` utilities, legacy vibrant utilities re-pointed to calm equivalents | P1 | Testing | Passed | — | `feat(ui): introduce paper and ink design system` | No |
-| S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Not Started | — | — | `feat(ui): restyle layout with paper and ink` | No |
+| S.1 | Design system: paper/ink/accent tokens, calm charcoal brand scale, deeper AA status colours + soft chip backgrounds, `surface` / `btn-press` / hard-shadow / `paper-dots` utilities, legacy vibrant utilities re-pointed to calm equivalents | P1 | Completed | Passed (GitHub run ✅) | `dffb965` | `feat(ui): introduce paper and ink design system` | Yes |
+| S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Testing | Passed | — | `feat(ui): restyle layout with paper and ink` | No |
 | S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Not Started | — | — | `feat(ui): restyle dashboard, progress and task cards` | No |
 | S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Not Started | — | — | `feat(ui): restyle task forms, details and dialogs` | No |
 
@@ -209,4 +209,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: `src/index.css` — new tokens `paper`, `paper-deep`, `ink`, `accent` (#FFD60A), `accent-soft`; brand scale re-tuned from violet to warm charcoal; status colours deepened (pending #1d4ed8, overdue #be123c, late #92400e, archived #52606d) with new `status-*-soft` chip backgrounds; utilities `shadow-hard-xs/sm`, `shadow-hard`, `surface`, `btn-press`, `paper-dots`; page background is dotted cream paper; ink focus ring; yellow text selection. The old vibrant utilities (gradients, glass, glow) now map to calm equivalents until S.4 removes them.
 - Tests: `designTokens.test.ts` extended — ink ≥ 7:1 on paper/white/accent, every status text ≥ 4.5:1 on its soft chip, brand is low-saturation, new utilities exist, hard shadows. `npm run check` → lint, typecheck, 173/173 tests, build passed. Browser: desktop + mobile, no overflow, no console errors.
 - Failed / fixed: the new test showed 4 status colours were below 4.5:1 on their soft chips — deepened them (all now 5.2–6.2:1).
+- Commit: `dffb965`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### S.2 — Layout restyle
+- Changed: removed `BackgroundDecor` (floating blobs/shapes). Sidebar: white sheet with 2px ink edge, yellow logo tile, small-caps "My tasks" label, plain status-coloured icons, active page = yellow pill with ink outline + hard shadow (inactive links keep a transparent border so nothing shifts), dashed "Teams are coming" note. Header: paper background with 2px ink bottom rule (no blur), bold display title, pressable menu button. "New task" is a yellow `btn-press` button. Mobile overlay is a plain dim. Removed the unused `bubbleClass` from nav items.
+- Tests: `AppLayout.test.tsx` rewritten (no decor, brand + tagline, nav labels + active yellow pill, pressable New task, skip link). `npm run check` → lint, typecheck, 174/174 tests, build passed. Browser: desktop, mobile, mobile menu — no overflow, no console errors. Grey helper text 5.2–5.6:1.
+- Failed: none.
 - Commit: waiting for approval. Pushed: No.

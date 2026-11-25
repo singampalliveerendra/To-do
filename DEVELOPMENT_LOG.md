@@ -92,3 +92,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task S.1: Paper & Ink design system
 - New paper/ink/accent tokens, charcoal brand, deeper AA status colours + soft chips, surface/press/hard-shadow utilities; legacy vibrant utilities mapped to calm equivalents.
 - Contrast test caught 4 status colours below AA on soft chips — fixed. 173 tests green.
+- Committed and pushed Task S.1 (`dffb965`); CI green.
+
+## 2026-11-25 — Task S.2: Layout restyle
+- Calm sidebar and header in Paper & Ink; floating background decoration removed; yellow pressable New task button.
+- 174 tests green.
