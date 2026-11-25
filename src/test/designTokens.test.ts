@@ -38,8 +38,16 @@ describe('design tokens', () => {
     },
   )
 
-  it.each(['brand-600', 'brand-700', 'brand-800', 'pop-fuchsia-deep', 'pop-pink-deep'])('white text on %s is readable (WCAG AA)', (shade) => {
+  it.each(['brand-600', 'brand-700', 'brand-800', 'ink', 'status-overdue', 'status-completed'])(
+    'white text on %s is readable (WCAG AA) — used for filled buttons and the done checkbox',
+    (shade) => {
+      expect(contrast(token(`color-${shade}`), WHITE)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+    },
+  )
+
+  it.each(['brand-500', 'brand-600'])('grey helper text %s is readable on white and on paper (AA)', (shade) => {
     expect(contrast(token(`color-${shade}`), WHITE)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+    expect(contrast(token(`color-${shade}`), token('color-paper'))).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
   it('defines the display and body fonts', () => {
@@ -51,23 +59,13 @@ describe('design tokens', () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/)
   })
 
-  it('button gradient and gradient text only use stops that are readable with/on white', () => {
-    for (const utility of ['bg-gradient-button', 'bg-gradient-button-animated', 'text-gradient-brand']) {
-      const body = css.match(new RegExp(`@utility ${utility} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? ''
-      const stops = [...body.matchAll(/var\(--(color-[a-z0-9-]+)\)/g)].map((m) => m[1])
-      expect(stops.length, utility).toBeGreaterThan(0)
-      for (const stop of stops) {
-        expect(contrast(token(stop), WHITE), `${utility}: ${stop}`).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
-      }
+  it('the old vibrant theme is fully removed (no gradients, glass, glow or pop colours)', () => {
+    for (const legacy of ['bg-gradient-brand', 'bg-gradient-button', 'text-gradient-brand', 'glass', 'shadow-glow', 'shadow-card']) {
+      expect(css, legacy).not.toContain(`@utility ${legacy} {`)
     }
+    expect(css).not.toMatch(/--color-pop-/)
+    expect(css).not.toMatch(/@keyframes (float|blob|wiggle|gradient-pan)/)
   })
-
-  it.each(['bg-gradient-brand', 'bg-gradient-button', 'text-gradient-brand', 'glass', 'shadow-glow', 'shadow-card'])(
-    'provides the %s utility',
-    (utility) => {
-      expect(css).toContain(`@utility ${utility} {`)
-    },
-  )
 
   it('contrast helper matches known WCAG values', () => {
     expect(contrast('#000000', WHITE)).toBeCloseTo(21, 0)

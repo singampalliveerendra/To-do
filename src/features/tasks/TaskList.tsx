@@ -27,7 +27,7 @@ export function TaskList({
 
   if (status === 'loading') {
     return (
-      <p className="flex items-center gap-2 py-8 text-sm text-slate-500" role="status">
+      <p className="flex items-center gap-2 py-8 text-sm text-brand-500" role="status">
         <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> Loading tasks…
       </p>
     )
@@ -35,7 +35,7 @@ export function TaskList({
 
   if (status === 'error') {
     return (
-      <p role="alert" className="rounded-lg bg-status-overdue/10 px-4 py-3 text-sm text-status-overdue">
+      <p role="alert" className="rounded-xl border-2 border-status-overdue bg-status-overdue-soft px-4 py-3 text-sm font-medium text-status-overdue">
         {error}
       </p>
     )
@@ -44,7 +44,7 @@ export function TaskList({
   return (
     <>
       {actionError && (
-        <p role="alert" className="mb-3 rounded-lg bg-status-overdue/10 px-4 py-3 text-sm text-status-overdue">
+        <p role="alert" className="mb-3 rounded-xl border-2 border-status-overdue bg-status-overdue-soft px-4 py-3 text-sm font-medium text-status-overdue">
           {actionError}
         </p>
       )}

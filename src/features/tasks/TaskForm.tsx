@@ -17,8 +17,13 @@ interface TaskFormProps {
   onCancel: () => void
 }
 
-const inputClass =
-  'block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30'
+/** Outlined field; yellow focus glow; red outline + soft red glow when invalid. */
+const fieldClass = (invalid: boolean) =>
+  cn(
+    'block w-full rounded-xl border-2 bg-white px-3.5 py-2.5 text-sm text-ink transition-shadow placeholder:text-brand-400',
+    'focus:outline-none focus:ring-4',
+    invalid ? 'border-status-overdue focus:ring-status-overdue-soft' : 'border-ink focus:ring-accent/60',
+  )
 
 export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: TaskFormProps) {
   const id = useId()
@@ -53,9 +58,9 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
   const descriptionErrorId = `${id}-description-error`
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
       <div>
-        <label htmlFor={`${id}-title`} className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor={`${id}-title`} className="mb-1.5 block text-sm font-semibold text-ink">
           Title <span className="text-status-overdue">*</span>
         </label>
         <input
@@ -69,18 +74,18 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
           autoComplete="off"
           aria-invalid={errors.title ? true : undefined}
           aria-describedby={errors.title ? titleErrorId : undefined}
-          className={cn(inputClass, errors.title ? 'border-status-overdue' : 'border-slate-300')}
+          className={fieldClass(Boolean(errors.title))}
         />
         {errors.title && (
-          <p id={titleErrorId} className="mt-1 text-sm text-status-overdue">
+          <p id={titleErrorId} className="mt-1.5 text-sm font-medium text-status-overdue">
             {errors.title}
           </p>
         )}
       </div>
 
       <div>
-        <label htmlFor={`${id}-description`} className="mb-1 block text-sm font-medium text-slate-700">
-          Description <span className="font-normal text-slate-400">(optional)</span>
+        <label htmlFor={`${id}-description`} className="mb-1.5 block text-sm font-semibold text-ink">
+          Description <span className="font-normal text-brand-500">(optional)</span>
         </label>
         <textarea
           id={`${id}-description`}
@@ -92,37 +97,32 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
           placeholder="Add details, links or notes"
           aria-invalid={errors.description ? true : undefined}
           aria-describedby={errors.description ? descriptionErrorId : undefined}
-          className={cn(inputClass, 'resize-y', errors.description ? 'border-status-overdue' : 'border-slate-300')}
+          className={cn(fieldClass(Boolean(errors.description)), 'resize-y')}
         />
-        <div className="mt-1 flex justify-between gap-2 text-xs">
-          <span id={descriptionErrorId} className="text-status-overdue">
+        <div className="mt-1.5 flex justify-between gap-2 text-xs">
+          <span id={descriptionErrorId} className="font-medium text-status-overdue">
             {errors.description}
           </span>
-          <span className="text-slate-400">
+          <span className="text-brand-500 tabular-nums">
             {values.description.length}/{DESCRIPTION_MAX_LENGTH}
           </span>
         </div>
       </div>
 
       {formError && (
-        <p role="alert" className="rounded-lg bg-status-overdue/10 px-3 py-2 text-sm text-status-overdue">
+        <p
+          role="alert"
+          className="rounded-xl border-2 border-status-overdue bg-status-overdue-soft px-3 py-2 text-sm font-medium text-status-overdue"
+        >
           {formError}
         </p>
       )}
 
-      <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+      <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end">
+        <button type="button" onClick={onCancel} className="btn-press bg-white px-4 py-2.5 text-sm font-semibold text-ink">
           Cancel
         </button>
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
+        <button type="submit" disabled={submitting} className="btn-press bg-accent px-5 py-2.5 text-sm font-bold text-ink">
           {submitting ? 'Saving…' : submitLabel}
         </button>
       </div>

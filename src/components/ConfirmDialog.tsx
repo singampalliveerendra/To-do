@@ -53,20 +53,23 @@ export function ConfirmDialog({
 
   return (
     <Modal open={open} title={title} onClose={close}>
-      <div className="space-y-4 text-sm text-slate-600">{children}</div>
+      <div className="space-y-3 text-sm leading-relaxed text-brand-600">{children}</div>
 
       {error && (
-        <p role="alert" className="mt-4 rounded-lg bg-status-overdue/10 px-3 py-2 text-sm text-status-overdue">
+        <p
+          role="alert"
+          className="mt-4 rounded-xl border-2 border-status-overdue bg-status-overdue-soft px-3 py-2 text-sm font-medium text-status-overdue"
+        >
           {error}
         </p>
       )}
 
-      <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
           data-autofocus
           onClick={close}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="btn-press bg-white px-4 py-2.5 text-sm font-semibold text-ink"
         >
           Cancel
         </button>
@@ -75,8 +78,8 @@ export function ConfirmDialog({
           onClick={confirm}
           disabled={busy}
           className={cn(
-            'rounded-lg px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60',
-            tone === 'danger' ? 'bg-status-overdue hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700',
+            'btn-press px-4 py-2.5 text-sm font-bold text-white',
+            tone === 'danger' ? 'bg-status-overdue' : 'bg-ink',
           )}
         >
           {busy ? 'Working…' : confirmLabel}

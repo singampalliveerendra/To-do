@@ -72,8 +72,8 @@ export function useTaskActions({ onDeleted }: Options = {}) {
         }}
       >
         <p>
-          <strong className="font-medium break-words text-slate-900">“{confirm?.task.title}”</strong> will move to{' '}
-          <strong className="font-medium text-slate-900">Archived</strong>. All its details are kept and you can
+          <strong className="font-medium break-words text-ink">“{confirm?.task.title}”</strong> will move to{' '}
+          <strong className="font-medium text-ink">Archived</strong>. All its details are kept and you can
           restore it at any time.
         </p>
       </ConfirmDialog>
@@ -92,7 +92,7 @@ export function useTaskActions({ onDeleted }: Options = {}) {
         }}
       >
         <p>
-          <strong className="font-medium break-words text-slate-900">“{confirm?.task.title}”</strong> and all its
+          <strong className="font-medium break-words text-ink">“{confirm?.task.title}”</strong> and all its
           details will be deleted forever.
         </p>
         <p className="font-medium text-status-overdue">This cannot be undone.</p>

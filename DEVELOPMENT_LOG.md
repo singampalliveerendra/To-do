@@ -102,3 +102,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task S.3: Dashboard, progress and task cards
 - Calm progress card with accessible progress bar, outlined filter cards with soft status tiles, cleaner task cards with soft chips and quiet actions, simpler empty state.
 - 174 tests green.
+- Committed and pushed Task S.3 (`3542c77`); CI green.
+
+## 2026-11-25 — Task S.4: Forms, dialogs, details and clean-up
+- Paper & Ink dialogs (mobile bottom sheet), outlined form fields with yellow focus, calm confirmations, restyled details page and 404. Removed every legacy vibrant style.
+- 171 tests green. **Milestone S complete** once committed. Next: Milestone 3 (deadlines).

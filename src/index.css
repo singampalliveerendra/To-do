@@ -7,9 +7,6 @@
  *  accent. Use tokens as Tailwind utilities: `bg-paper`, `border-ink`,
  *  `bg-accent`, `bg-status-pending-soft`, plus the utilities below
  *  (`surface`, `shadow-hard-sm`, `btn-press`, `paper-dots` …).
- *
- *  (The older vibrant utilities further down — glass, gradients, glow — are
- *  kept only until every component has moved over; they are removed in S.4.)
  * ─────────────────────────────────────────────────────────────
  */
 @theme {
@@ -37,19 +34,6 @@
   --color-brand-800: #221f1b;
   --color-brand-900: #1a1a1a;
 
-  /* Pop colours — for gradients, illustrations and decoration (not body text) */
-  --color-pop-pink: #ec4899;
-  --color-pop-fuchsia: #d946ef;
-  --color-pop-orange: #fb923c;
-  --color-pop-yellow: #facc15;
-  --color-pop-lime: #a3e635;
-  --color-pop-cyan: #22d3ee;
-  --color-pop-sky: #38bdf8;
-
-  /* Deeper pops — safe behind white text (≥ 4.5:1), used in button gradients */
-  --color-pop-fuchsia-deep: #c026d3;
-  --color-pop-pink-deep: #db2777;
-
   /*
    * Task status colours — one place to change them for the whole app.
    * Chosen to keep ≥ 4.5:1 contrast as text on white (WCAG AA).
@@ -67,18 +51,10 @@
   --color-status-late-soft: #fdefcf;
   --color-status-archived-soft: #ececea;
 
-  --radius-4xl: 2rem;
-
   /* Motion */
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-float-slow: float 9s ease-in-out infinite;
-  --animate-blob: blob 18s ease-in-out infinite;
   --animate-pop-in: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-wiggle: wiggle 0.5s ease-in-out;
-  --animate-gradient-pan: gradient-pan 8s ease infinite;
   --animate-burst: burst 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  --animate-spin-slow: spin 24s linear infinite;
 
   /* Confetti dot flying outward; set --dx / --dy on the element */
   @keyframes burst {
@@ -89,29 +65,6 @@
     100% {
       transform: translate(var(--dx), var(--dy)) scale(0.3);
       opacity: 0;
-    }
-  }
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0) rotate(0deg);
-    }
-    50% {
-      transform: translateY(-12px) rotate(3deg);
-    }
-  }
-
-  @keyframes blob {
-    0%,
-    100% {
-      transform: translate(0, 0) scale(1);
-    }
-    33% {
-      transform: translate(40px, -30px) scale(1.1);
-    }
-    66% {
-      transform: translate(-30px, 25px) scale(0.92);
     }
   }
 
@@ -137,28 +90,6 @@
     }
   }
 
-  @keyframes wiggle {
-    0%,
-    100% {
-      transform: rotate(0deg);
-    }
-    25% {
-      transform: rotate(-8deg);
-    }
-    75% {
-      transform: rotate(8deg);
-    }
-  }
-
-  @keyframes gradient-pan {
-    0%,
-    100% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-  }
 }
 
 /* ── Paper & Ink utilities ────────────────────────────────── */
@@ -211,41 +142,6 @@
   background-size: 22px 22px;
 }
 
-/*
- * ── Legacy aliases (removed in S.4) ─────────────────────────
- * Old "vibrant" utility names, re-pointed to calm Paper & Ink equivalents so
- * the whole app looks consistent while components are migrated one by one.
- */
-@utility bg-gradient-brand {
-  background-color: var(--color-accent);
-}
-@utility bg-gradient-brand-animated {
-  background-color: var(--color-accent);
-}
-@utility bg-gradient-button {
-  background-color: var(--color-ink);
-}
-@utility bg-gradient-button-animated {
-  background-color: var(--color-ink);
-}
-@utility text-gradient-brand {
-  color: var(--color-ink);
-}
-@utility glass {
-  background-color: #fff;
-  border: 2px solid var(--color-ink);
-}
-@utility glass-strong {
-  background-color: #fff;
-  border: 2px solid var(--color-ink);
-}
-@utility shadow-glow {
-  box-shadow: 3px 3px 0 var(--color-ink);
-}
-@utility shadow-card {
-  box-shadow: 2px 2px 0 var(--color-ink);
-}
-
 /* ── Base styles ──────────────────────────────────────────── */
 
 @layer base {
@@ -273,7 +169,7 @@
   }
 }
 
-/* Respect "reduce motion" settings: no floating, blobs or pop-ins. */
+/* Respect "reduce motion" settings: no slide-ins, pop-ins or confetti. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

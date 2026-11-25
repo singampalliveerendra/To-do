@@ -11,8 +11,8 @@ interface ModalProps {
 
 /**
  * Accessible dialog: Escape and the backdrop close it; focus returns to the opener.
- * Rendered into <body> via a portal so parent styles (e.g. the header's
- * backdrop-blur, which creates a new containing block for `fixed`) can't trap it.
+ * Rendered into <body> via a portal so parent styles can't trap `position: fixed`.
+ * Bottom sheet on phones, centred card on larger screens.
  */
 export function Modal({ open, title, onClose, children }: ModalProps) {
   const titleId = useId()
@@ -39,24 +39,26 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
   if (!open) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/50" onClick={onClose} aria-hidden="true" data-testid="modal-backdrop" />
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
+      <div className="absolute inset-0 bg-ink/40" onClick={onClose} aria-hidden="true" data-testid="modal-backdrop" />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:max-w-lg sm:rounded-2xl sm:p-6"
+        className="relative max-h-[90vh] w-full animate-fade-up overflow-y-auto rounded-t-2xl border-2 border-b-0 border-ink bg-white p-5 shadow-hard sm:max-w-lg sm:rounded-2xl sm:border-b-2 sm:p-6"
       >
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-lg font-semibold">
+        {/* Grab handle hint on phones */}
+        <span className="mx-auto -mt-1 mb-3 block h-1.5 w-10 rounded-full bg-brand-200 sm:hidden" aria-hidden="true" />
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <h2 id={titleId} className="font-display text-xl font-extrabold tracking-tight">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="-mt-1 -mr-2 rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+            className="-mt-1 -mr-2 rounded-lg p-2 text-brand-500 transition-colors hover:bg-paper hover:text-ink"
             aria-label="Close dialog"
           >
             <X className="size-5" aria-hidden="true" />
