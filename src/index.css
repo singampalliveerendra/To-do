@@ -1,28 +1,194 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens. Use them as Tailwind utilities, e.g. `bg-brand-600`,
- * `text-status-overdue`, `font-sans`.
+ * ─────────────────────────────────────────────────────────────
+ *  Design system — "Vibrant & playful"
+ *  Use tokens as Tailwind utilities: `bg-brand-600`, `text-status-overdue`,
+ *  `font-display`, `animate-float`, plus the custom utilities below
+ *  (`bg-gradient-brand`, `text-gradient-brand`, `glass`, `shadow-glow` …).
+ * ─────────────────────────────────────────────────────────────
  */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand (indigo) */
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-900: #312e81;
+  /* Brand — electric violet */
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
 
-  /* Task status colours — one place to change them for the whole app */
+  /* Pop colours — for gradients, illustrations and decoration (not body text) */
+  --color-pop-pink: #ec4899;
+  --color-pop-fuchsia: #d946ef;
+  --color-pop-orange: #fb923c;
+  --color-pop-yellow: #facc15;
+  --color-pop-lime: #a3e635;
+  --color-pop-cyan: #22d3ee;
+  --color-pop-sky: #38bdf8;
+
+  /*
+   * Task status colours — one place to change them for the whole app.
+   * Chosen to keep ≥ 4.5:1 contrast as text on white (WCAG AA).
+   */
   --color-status-pending: #2563eb;
-  --color-status-overdue: #dc2626;
-  --color-status-completed: #16a34a;
-  --color-status-late: #d97706;
+  --color-status-overdue: #e11d48;
+  --color-status-completed: #047857;
+  --color-status-late: #b45309;
   --color-status-archived: #64748b;
+
+  --radius-4xl: 2rem;
+
+  /* Motion */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-blob: blob 18s ease-in-out infinite;
+  --animate-pop-in: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-wiggle: wiggle 0.5s ease-in-out;
+  --animate-gradient-pan: gradient-pan 8s ease infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-12px) rotate(3deg);
+    }
+  }
+
+  @keyframes blob {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(40px, -30px) scale(1.1);
+    }
+    66% {
+      transform: translate(-30px, 25px) scale(0.92);
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.85) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+  }
+
+  @keyframes gradient-pan {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 }
+
+/* ── Custom utilities ─────────────────────────────────────── */
+
+/* Signature gradient: violet → fuchsia → orange */
+@utility bg-gradient-brand {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-brand-600) 0%,
+    var(--color-pop-fuchsia) 55%,
+    var(--color-pop-orange) 100%
+  );
+}
+
+/* Same gradient, animated (use with large backgrounds/buttons) */
+@utility bg-gradient-brand-animated {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-brand-600),
+    var(--color-pop-fuchsia),
+    var(--color-pop-orange),
+    var(--color-pop-fuchsia),
+    var(--color-brand-600)
+  );
+  background-size: 300% 300%;
+  animation: var(--animate-gradient-pan);
+}
+
+/* Gradient text for big headings. Falls back to solid brand colour. */
+@utility text-gradient-brand {
+  color: var(--color-brand-700);
+  background-image: linear-gradient(110deg, var(--color-brand-700), var(--color-pop-fuchsia) 60%, var(--color-pop-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Frosted glass surface */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.65);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgb(255 255 255 / 0.7);
+}
+
+/* Stronger glass for overlays (dialogs) */
+@utility glass-strong {
+  background-color: rgb(255 255 255 / 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgb(255 255 255 / 0.8);
+}
+
+/* Coloured glow shadow (brand) */
+@utility shadow-glow {
+  box-shadow:
+    0 10px 30px -10px rgb(124 58 237 / 0.45),
+    0 4px 12px -4px rgb(217 70 239 / 0.3);
+}
+
+/* Soft lift shadow for cards */
+@utility shadow-card {
+  box-shadow:
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 8px 24px -12px rgb(76 29 149 / 0.18);
+}
+
+/* ── Base styles ──────────────────────────────────────────── */
 
 @layer base {
   html {
@@ -30,7 +196,21 @@
   }
 
   body {
-    @apply min-h-screen bg-slate-50 font-sans text-slate-900 antialiased;
+    @apply min-h-screen font-sans text-slate-900 antialiased;
+    /* Soft pastel mesh behind everything */
+    background-color: #faf7ff;
+    background-image:
+      radial-gradient(at 0% 0%, rgb(196 181 253 / 0.35) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgb(251 207 232 / 0.4) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgb(254 215 170 / 0.35) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgb(165 243 252 / 0.3) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
   }
 
   /* Visible keyboard focus everywhere, hidden for mouse clicks */
@@ -39,6 +219,18 @@
   }
 
   ::selection {
-    @apply bg-brand-200 text-brand-900;
+    @apply bg-pop-fuchsia/25 text-brand-900;
+  }
+}
+
+/* Respect "reduce motion" settings: no floating, blobs or pop-ins. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

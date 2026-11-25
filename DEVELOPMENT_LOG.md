@@ -65,3 +65,11 @@ Short chronological history of the project. Newest entries at the bottom.
 - Added task details page (`/tasks/:id`) with status badge, full description, history timeline and all actions; card titles link to it.
 - Refactored task actions into a shared `useTaskActions` hook used by list and details page.
 - 112 tests green; browser check on desktop and mobile passed. Owner given the local URL (http://localhost:5173) to review.
+- Committed and pushed Task 2.5 (`a8c883e`); CI green. **Milestone 2 complete.**
+
+## 2026-11-25 — Milestone R: UI redesign requested
+- Owner asked for a bold, playful, premium redesign. Split into 4 tasks (R.1 design system, R.2 layout, R.3 dashboard & cards, R.4 dialogs/forms/details), each committed separately, before Milestone 3.
+
+## 2026-11-25 — Task R.1: Design system
+- New fonts, vibrant palette, AA-contrast status colours, gradient/glass/glow utilities, animation keyframes, pastel mesh background, reduced-motion support.
+- Automated WCAG contrast test for the design tokens. 128 tests green.

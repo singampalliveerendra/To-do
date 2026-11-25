@@ -28,7 +28,18 @@ _Priority: P0 = must have, P1 = should have, P2 = nice to have_
 | 2.2 | Edit / update existing tasks (modal form, validation) | P0 | Completed | Passed (GitHub run ✅) | `9b98e34` | `feat(tasks): add task editing functionality` | Yes |
 | 2.3 | Archive (soft delete, restorable) + permanent delete, both behind a confirmation dialog; Archived view | P0 | Completed | Passed (GitHub run ✅) | `ef4208d` | `feat(tasks): implement task deletion and archiving` | Yes |
 | 2.4 | Mark task complete / reopen (sets `completedAt`) | P0 | Completed | Passed (GitHub run ✅) | `fd69879` | `feat(tasks): add task completion functionality` | Yes |
-| 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Testing | Passed | — | `feat(dashboard): display task details` | No |
+| 2.5 | Dashboard: task cards/list, task detail panel, summary counters | P0 | Completed | Passed (GitHub run ✅) | `a8c883e` | `feat(dashboard): display task details` | Yes |
+
+## Milestone R — UI Redesign (requested by owner, 2026-11-25)
+
+_Goal: attractive, energetic, playful, premium UI — bold gradients, vibrant colours, glassmorphism, floating elements, micro-interactions — while keeping usability, responsiveness and accessibility (WCAG AA contrast, reduced-motion support, keyboard focus)._
+
+| ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
+|---|---|---|---|---|---|---|---|
+| R.1 | Design system: fonts (Bricolage Grotesque + Plus Jakarta Sans), vibrant violet/fuchsia/orange palette, AA-contrast status colours, gradient/glass/glow utilities, animation keyframes, pastel mesh background, reduced-motion support | P1 | Testing | Passed | — | `feat(ui): add vibrant design system tokens and animations` | No |
+| R.2 | Layout: glass sidebar with gradient logo, colourful nav, glass header, floating animated background blobs | P1 | Not Started | — | — | `feat(ui): redesign app layout with glass and floating elements` | No |
+| R.3 | Dashboard & task cards: gradient hero/greeting, vibrant stat cards, playful empty-state illustrations, animated cards and checkbox micro-interactions | P1 | Not Started | — | — | `feat(ui): redesign dashboard and task cards` | No |
+| R.4 | Dialogs, forms, details page and 404: glass dialogs with pop-in, gradient buttons, redesigned details/history, fun 404 | P1 | Not Started | — | — | `feat(ui): redesign dialogs, forms and task details` | No |
 
 ## Milestone 3 — Deadlines & Progress Tracking
 
@@ -160,4 +171,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Changed: new route `/tasks/:taskId` with `TaskDetailsPage`: status badge, full description (line breaks kept, placeholder when empty), History timeline (created / last edited / completed / archived, oldest first), action buttons (Mark complete / Reopen, Edit, Archive, Restore, Delete permanently), Back link that returns to the page the task was opened from, "Task not found" state, and a redirect to Archived after deleting. Task card titles are now links. Extracted shared `useTaskActions` hook (actions + edit/confirm dialogs) used by both the list and the details page; `TaskList` no longer needs a `variant` prop. New `TaskStatusBadge`.
 - Tests: `npm run check` → lint, typecheck, 112/112 tests, build all passed (all 101 earlier tests still green after the refactor). Browser check (desktop + mobile): open from card, mark complete, refresh on the details URL; no console errors; no overflow.
 - Failed / fixed: my browser script waited on the hidden mobile sidebar link instead of the status badge — script fixed, app unchanged.
+- Commit: `a8c883e`. Pushed: Yes (2026-11-25). GitHub Actions run ✅. **Milestone 2 complete.**
+
+### R.1 — Design system
+- Changed: `src/index.css` rewritten as a design system — display font Bricolage Grotesque for headings, Plus Jakarta Sans for body (loaded in `index.html`); electric-violet brand scale (50–900); pop colours (pink, fuchsia, orange, yellow, lime, cyan, sky) for decoration; status colours re-tuned so each is ≥ 4.5:1 on white; utilities `bg-gradient-brand`, `bg-gradient-brand-animated`, `text-gradient-brand`, `glass`, `glass-strong`, `shadow-glow`, `shadow-card`; animations `float`, `float-slow`, `blob`, `pop-in`, `fade-up`, `wiggle`, `gradient-pan`; pastel mesh page background; all motion disabled under `prefers-reduced-motion`.
+- Tests: new `src/test/designTokens.test.ts` computes WCAG contrast for every status colour and for white text on brand-600/700/800, and checks fonts, utilities and the reduced-motion rule. `npm run check` → lint, typecheck, 128/128 tests, build passed. Browser: both fonts load, no console errors.
+- Failed / fixed: Vitest returns CSS imports (even `?raw`) as an empty string, so the token test first failed to find any tokens — it now reads `src/index.css` from disk.
 - Commit: waiting for approval. Pushed: No.
