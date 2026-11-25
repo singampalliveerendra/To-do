@@ -73,3 +73,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task R.1: Design system
 - New fonts, vibrant palette, AA-contrast status colours, gradient/glass/glow utilities, animation keyframes, pastel mesh background, reduced-motion support.
 - Automated WCAG contrast test for the design tokens. 128 tests green.
+- Committed and pushed Task R.1 (`bcc2e01`); CI green.
+
+## 2026-11-25 — Task R.2: Layout redesign
+- Glass sidebar and header, gradient logo and active pill, animated gradient New task button, drifting background blobs and floating shapes.
+- Caught and fixed two contrast/visual issues via screenshots and the token test (AA-safe button gradient; gradient title sizing). 136 tests green.

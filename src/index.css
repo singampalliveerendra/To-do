@@ -33,6 +33,10 @@
   --color-pop-cyan: #22d3ee;
   --color-pop-sky: #38bdf8;
 
+  /* Deeper pops — safe behind white text (≥ 4.5:1), used in button gradients */
+  --color-pop-fuchsia-deep: #c026d3;
+  --color-pop-pink-deep: #db2777;
+
   /*
    * Task status colours — one place to change them for the whole app.
    * Chosen to keep ≥ 4.5:1 contrast as text on white (WCAG AA).
@@ -149,10 +153,36 @@
   animation: var(--animate-gradient-pan);
 }
 
-/* Gradient text for big headings. Falls back to solid brand colour. */
+/*
+ * Button gradient: like the brand gradient but every stop keeps white text
+ * readable (WCAG AA). Use this — not bg-gradient-brand — behind text.
+ */
+@utility bg-gradient-button {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-brand-700) 0%,
+    var(--color-pop-fuchsia-deep) 60%,
+    var(--color-pop-pink-deep) 100%
+  );
+}
+
+@utility bg-gradient-button-animated {
+  background-image: linear-gradient(
+    120deg,
+    var(--color-brand-700),
+    var(--color-pop-fuchsia-deep),
+    var(--color-pop-pink-deep),
+    var(--color-pop-fuchsia-deep),
+    var(--color-brand-700)
+  );
+  background-size: 300% 300%;
+  animation: var(--animate-gradient-pan);
+}
+
+/* Gradient text for headings — deep stops keep it readable (≥ 4.5:1). Falls back to solid brand colour. */
 @utility text-gradient-brand {
   color: var(--color-brand-700);
-  background-image: linear-gradient(110deg, var(--color-brand-700), var(--color-pop-fuchsia) 60%, var(--color-pop-orange));
+  background-image: linear-gradient(110deg, var(--color-brand-700), var(--color-pop-fuchsia-deep) 60%, var(--color-pop-pink-deep));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -38,7 +38,7 @@ describe('design tokens', () => {
     },
   )
 
-  it.each(['brand-600', 'brand-700', 'brand-800'])('white text on %s is readable (WCAG AA)', (shade) => {
+  it.each(['brand-600', 'brand-700', 'brand-800', 'pop-fuchsia-deep', 'pop-pink-deep'])('white text on %s is readable (WCAG AA)', (shade) => {
     expect(contrast(token(`color-${shade}`), WHITE)).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
   })
 
@@ -51,7 +51,18 @@ describe('design tokens', () => {
     expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/)
   })
 
-  it.each(['bg-gradient-brand', 'text-gradient-brand', 'glass', 'shadow-glow', 'shadow-card'])(
+  it('button gradient and gradient text only use stops that are readable with/on white', () => {
+    for (const utility of ['bg-gradient-button', 'bg-gradient-button-animated', 'text-gradient-brand']) {
+      const body = css.match(new RegExp(`@utility ${utility} \\{([\\s\\S]*?)\\n\\}`))?.[1] ?? ''
+      const stops = [...body.matchAll(/var\(--(color-[a-z0-9-]+)\)/g)].map((m) => m[1])
+      expect(stops.length, utility).toBeGreaterThan(0)
+      for (const stop of stops) {
+        expect(contrast(token(stop), WHITE), `${utility}: ${stop}`).toBeGreaterThanOrEqual(AA_NORMAL_TEXT)
+      }
+    }
+  })
+
+  it.each(['bg-gradient-brand', 'bg-gradient-button', 'text-gradient-brand', 'glass', 'shadow-glow', 'shadow-card'])(
     'provides the %s utility',
     (utility) => {
       expect(css).toContain(`@utility ${utility} {`)
