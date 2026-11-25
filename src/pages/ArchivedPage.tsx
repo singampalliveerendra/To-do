@@ -7,7 +7,7 @@ export function ArchivedPage() {
   const { tasks } = useTasks()
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-brand-600">
         Archived tasks keep all their details. Restore a task to bring it back, or delete it permanently.
       </p>
       <TaskList

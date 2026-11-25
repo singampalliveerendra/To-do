@@ -97,3 +97,8 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-25 — Task S.2: Layout restyle
 - Calm sidebar and header in Paper & Ink; floating background decoration removed; yellow pressable New task button.
 - 174 tests green.
+- Committed and pushed Task S.2 (`1bec9b6`); CI green.
+
+## 2026-11-25 — Task S.3: Dashboard, progress and task cards
+- Calm progress card with accessible progress bar, outlined filter cards with soft status tiles, cleaner task cards with soft chips and quiet actions, simpler empty state.
+- 174 tests green.

@@ -1,4 +1,4 @@
-import { Hand, PartyPopper, Sparkles, Star } from 'lucide-react'
+import { Hand, PartyPopper } from 'lucide-react'
 import { completionPercent, getGreeting, getMotivation } from '@/lib/greeting'
 
 interface WelcomeBannerProps {
@@ -10,69 +10,54 @@ interface WelcomeBannerProps {
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' })
 
-function ProgressRing({ percent, label }: { percent: number; label: string }) {
-  const radius = 42
-  const circumference = 2 * Math.PI * radius
-  return (
-    <div className="relative size-20 shrink-0 sm:size-32" role="img" aria-label={label}>
-      <svg viewBox="0 0 100 100" className="size-full -rotate-90" aria-hidden="true">
-        <circle cx="50" cy="50" r={radius} fill="none" strokeWidth="10" className="stroke-white/25" />
-        <circle
-          cx="50"
-          cy="50"
-          r={radius}
-          fill="none"
-          strokeWidth="10"
-          strokeLinecap="round"
-          className="stroke-white transition-[stroke-dashoffset] duration-700 ease-out"
-          strokeDasharray={circumference}
-          strokeDashoffset={circumference * (1 - percent / 100)}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center" aria-hidden="true">
-        <span className="font-display text-xl font-extrabold sm:text-3xl">{percent}%</span>
-        <span className="text-[10px] font-semibold sm:text-xs">done</span>
-      </div>
-    </div>
-  )
-}
-
-/** Big gradient greeting with a completion ring. */
+/** Calm greeting card with an overall progress bar. */
 export function WelcomeBanner({ pending, completed, now = new Date() }: WelcomeBannerProps) {
   const percent = completionPercent(pending, completed)
   const total = pending + completed
   const allDone = total > 0 && pending === 0
+  const summary = `${completed} of ${total} tasks completed (${percent}%)`
 
   return (
-    <section
-      aria-labelledby="welcome-heading"
-      className="bg-gradient-button-animated shadow-glow relative animate-fade-up overflow-hidden rounded-4xl p-6 text-white sm:p-8"
-    >
-      {/* Decoration */}
-      <div aria-hidden="true">
-        <div className="absolute -top-16 -right-10 size-56 rounded-full bg-white/10" />
-        <div className="absolute -bottom-20 left-1/3 size-48 rounded-full bg-white/10" />
-        <Sparkles className="absolute top-5 right-[38%] size-6 animate-float text-pop-yellow" />
-        <Star className="absolute bottom-6 left-[45%] size-4 animate-float-slow fill-white/60 text-white/60" />
-        <span className="absolute top-10 left-[60%] size-2 animate-float rounded-full bg-pop-cyan" />
-      </div>
-
-      <div className="relative flex items-center justify-between gap-4 sm:gap-6">
+    <section aria-labelledby="welcome-heading" className="surface animate-fade-up p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-semibold">{dateFormat.format(now)}</p>
-          <h2 id="welcome-heading" className="mt-1 font-display text-2xl font-extrabold sm:text-4xl">
-            {getGreeting(now)}!{' '}
+          <p className="text-sm font-medium text-brand-500">{dateFormat.format(now)}</p>
+          <h2 id="welcome-heading" className="mt-0.5 flex items-center gap-2 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+            {getGreeting(now)}
             {allDone ? (
-              <PartyPopper className="inline size-8 animate-wiggle align-[-4px]" aria-hidden="true" />
+              <PartyPopper className="size-6 shrink-0 text-ink" aria-hidden="true" />
             ) : (
-              <Hand className="inline size-7 origin-bottom-right animate-wiggle align-[-3px] [animation-iteration-count:3]" aria-hidden="true" />
+              <Hand className="size-6 shrink-0 text-ink" aria-hidden="true" />
             )}
           </h2>
-          <p className="mt-2 max-w-md text-sm font-medium sm:text-base" data-testid="motivation">
+          <p className="mt-1 text-sm text-brand-600 sm:text-base" data-testid="motivation">
             {getMotivation(pending, completed)}
           </p>
         </div>
-        <ProgressRing percent={percent} label={`${completed} of ${total} tasks completed (${percent}%)`} />
+        <p className="shrink-0 text-right" aria-hidden="true">
+          <span className="block font-display text-3xl leading-none font-extrabold sm:text-4xl">{percent}%</span>
+          <span className="text-xs font-semibold text-brand-500">done</span>
+        </p>
+      </div>
+
+      <div className="mt-5">
+        <div
+          role="progressbar"
+          aria-label="Tasks completed"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+          aria-valuetext={summary}
+          className="h-3.5 overflow-hidden rounded-full border-2 border-ink bg-paper"
+        >
+          <div
+            className="h-full rounded-full bg-accent transition-[width] duration-500 ease-out"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+        <p className="mt-2 text-sm text-brand-500">
+          <span className="font-semibold text-ink">{completed}</span> of {total} done
+        </p>
       </div>
     </section>
   )

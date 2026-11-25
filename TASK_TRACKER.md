@@ -48,8 +48,8 @@ _Goal: calm, minimal, premium UI inspired by the comic look of the SNACCOON temp
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
 | S.1 | Design system: paper/ink/accent tokens, calm charcoal brand scale, deeper AA status colours + soft chip backgrounds, `surface` / `btn-press` / hard-shadow / `paper-dots` utilities, legacy vibrant utilities re-pointed to calm equivalents | P1 | Completed | Passed (GitHub run ✅) | `dffb965` | `feat(ui): introduce paper and ink design system` | Yes |
-| S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Testing | Passed | — | `feat(ui): restyle layout with paper and ink` | No |
-| S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Not Started | — | — | `feat(ui): restyle dashboard, progress and task cards` | No |
+| S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Completed | Passed (GitHub run ✅) | `1bec9b6` | `feat(ui): restyle layout with paper and ink` | Yes |
+| S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Testing | Passed | — | `feat(ui): restyle dashboard, progress and task cards` | No |
 | S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Not Started | — | — | `feat(ui): restyle task forms, details and dialogs` | No |
 
 ## Milestone 3 — Deadlines & Progress Tracking
@@ -214,5 +214,11 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 ### S.2 — Layout restyle
 - Changed: removed `BackgroundDecor` (floating blobs/shapes). Sidebar: white sheet with 2px ink edge, yellow logo tile, small-caps "My tasks" label, plain status-coloured icons, active page = yellow pill with ink outline + hard shadow (inactive links keep a transparent border so nothing shifts), dashed "Teams are coming" note. Header: paper background with 2px ink bottom rule (no blur), bold display title, pressable menu button. "New task" is a yellow `btn-press` button. Mobile overlay is a plain dim. Removed the unused `bubbleClass` from nav items.
 - Tests: `AppLayout.test.tsx` rewritten (no decor, brand + tagline, nav labels + active yellow pill, pressable New task, skip link). `npm run check` → lint, typecheck, 174/174 tests, build passed. Browser: desktop, mobile, mobile menu — no overflow, no console errors. Grey helper text 5.2–5.6:1.
+- Failed: none.
+- Commit: `1bec9b6`. Pushed: Yes (2026-11-25). GitHub Actions run ✅.
+
+### S.3 — Dashboard, progress and task cards
+- Changed: `WelcomeBanner` is now a calm white card — date, greeting with icon, motivational line, big % figure and an accessible yellow progress bar (`role=progressbar`, "1 of 4 tasks completed (25%)") instead of the dark ring banner. Dashboard filter cards: white `surface` sheets with soft status-tinted icon tiles, big count, arrow hint, lift on hover. "Your tasks" header with outlined count chip. `TaskCard`: white sheet with ink outline + hard shadow (archived = dashed, paper, no shadow), no colour strip, clearer hierarchy (bold title → grey description → chips + dates), soft status chips, green filled checkbox, action icons quiet until hover (always visible on touch), smaller 6-dot confetti pop. `EmptyState`: single outlined accent tile with a peeking second tile. Archived intro text uses the new neutral.
+- Tests: `WelcomeBanner.test.tsx` and completion tests moved from the old ring (`img`) to the progress bar; burst now 6 dots. `npm run check` → lint, typecheck, 174/174 tests, build passed. Browser: desktop (empty, full, completion pop, archived) and mobile — no overflow, no console errors.
 - Failed: none.
 - Commit: waiting for approval. Pushed: No.

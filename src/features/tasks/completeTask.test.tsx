@@ -122,7 +122,7 @@ describe('completion micro-interactions', () => {
     await user.click(box)
     const burst = await screen.findByTestId('burst')
     expect(burst).toHaveAttribute('aria-hidden', 'true')
-    expect(burst.children).toHaveLength(8)
+    expect(burst.children).toHaveLength(6) // a small, quiet pop
 
     await user.click(screen.getByRole('checkbox', { name: 'Mark "Celebrate me" as not complete' }))
     expect(screen.queryByTestId('burst')).not.toBeInTheDocument()
@@ -134,9 +134,10 @@ describe('completion micro-interactions', () => {
     await repo.create({ title: 'One', description: '' })
     await repo.create({ title: 'Two', description: '' })
     renderApp('/', { repository: repo })
-    expect(await screen.findByRole('img', { name: '0 of 2 tasks completed (0%)' })).toBeInTheDocument()
+    const progress = await screen.findByRole('progressbar', { name: 'Tasks completed' })
+    expect(progress).toHaveAttribute('aria-valuetext', '0 of 2 tasks completed (0%)')
 
     await user.click(screen.getByRole('checkbox', { name: 'Mark "One" as complete' }))
-    expect(screen.getByRole('img', { name: '1 of 2 tasks completed (50%)' })).toBeInTheDocument()
+    expect(progress).toHaveAttribute('aria-valuetext', '1 of 2 tasks completed (50%)')
   })
 })
