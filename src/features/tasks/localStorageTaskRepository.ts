@@ -14,7 +14,7 @@ interface Options {
 /**
  * Turns one stored entry into a Task, or null if it is not a valid task.
  * Fills in fields added after the entry was saved (`archivedAt` from Task 2.3,
- * `completedAt` from Task 2.4, `dueAt` from Task 3.1),
+ * `completedAt` from Task 2.4, `dueAt` from Task 3.1, `hasDueTime` from Task 3.2),
  * so data saved by older versions of the app keeps working.
  */
 function parseTask(value: unknown): Task | null {
@@ -29,6 +29,7 @@ function parseTask(value: unknown): Task | null {
   ) {
     return null
   }
+  const dueAt = typeof v.dueAt === 'string' && isIsoTimestamp(v.dueAt) ? v.dueAt : null
   return {
     id: v.id,
     title: v.title,
@@ -37,7 +38,8 @@ function parseTask(value: unknown): Task | null {
     updatedAt: v.updatedAt,
     completedAt: typeof v.completedAt === 'string' ? v.completedAt : null,
     archivedAt: typeof v.archivedAt === 'string' ? v.archivedAt : null,
-    dueAt: typeof v.dueAt === 'string' && isIsoTimestamp(v.dueAt) ? v.dueAt : null,
+    dueAt,
+    hasDueTime: dueAt !== null && v.hasDueTime === true,
   }
 }
 
@@ -92,7 +94,7 @@ export function createLocalStorageTaskRepository({
       const errors = validateTaskInput(input)
       if (hasErrors(errors)) throw new TaskValidationError(errors)
 
-      const { title, description, dueAt } = normalizeTaskInput(input)
+      const { title, description, dueAt, hasDueTime } = normalizeTaskInput(input)
       const timestamp = now().toISOString()
       const task: Task = {
         id: generateId(),
@@ -103,6 +105,7 @@ export function createLocalStorageTaskRepository({
         completedAt: null,
         archivedAt: null,
         dueAt,
+        hasDueTime,
       }
       write([task, ...read()])
       return task
@@ -111,13 +114,16 @@ export function createLocalStorageTaskRepository({
     async update(id, input) {
       const errors = validateTaskInput(input)
       if (hasErrors(errors)) throw new TaskValidationError(errors)
-      const { title, description, dueAt } = normalizeTaskInput(input)
+      const { title, description, dueAt, hasDueTime } = normalizeTaskInput(input)
 
       return modify(id, (task) =>
         // Nothing changed → keep the original "last updated" time.
-        task.title === title && task.description === description && task.dueAt === dueAt
+        task.title === title &&
+        task.description === description &&
+        task.dueAt === dueAt &&
+        task.hasDueTime === hasDueTime
           ? task
-          : { ...task, title, description, dueAt, updatedAt: now().toISOString() },
+          : { ...task, title, description, dueAt, hasDueTime, updatedAt: now().toISOString() },
       )
     },
 

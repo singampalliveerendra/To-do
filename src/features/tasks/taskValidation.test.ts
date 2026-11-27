@@ -52,6 +52,7 @@ describe('normalizeTaskInput', () => {
       title: 'Report',
       description: 'notes',
       dueAt: null,
+      hasDueTime: false,
     })
   })
 

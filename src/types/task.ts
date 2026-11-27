@@ -11,6 +11,8 @@ export interface Task {
   archivedAt: string | null
   /** Target completion time (UTC), or null when the task has no deadline. */
   dueAt: string | null
+  /** False when the user picked only a date (the time defaulted to 23:59 local). */
+  hasDueTime: boolean
 }
 
 /** What the user fills in when creating or editing a task. */
@@ -19,4 +21,6 @@ export interface NewTaskInput {
   description: string
   /** Target completion time (UTC ISO string). Omitted or null = no deadline. */
   dueAt?: string | null
+  /** True when the user picked a time as well as a date. Ignored without `dueAt`. */
+  hasDueTime?: boolean
 }

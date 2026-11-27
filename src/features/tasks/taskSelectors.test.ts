@@ -12,6 +12,7 @@ function task(id: string, overrides: Partial<Task> = {}): Task {
     completedAt: null,
     archivedAt: null,
     dueAt: null,
+    hasDueTime: false,
     ...overrides,
   }
 }

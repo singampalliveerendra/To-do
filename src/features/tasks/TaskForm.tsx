@@ -4,12 +4,13 @@ import { cn } from '@/lib/cn'
 import {
   dateInputToDueAt,
   dueAtToDateInput,
+  dueAtToTimeInput,
+  formatDueDate,
   MAX_DATE_INPUT,
   MAX_DUE_YEAR,
   MIN_DATE_INPUT,
   MIN_DUE_YEAR,
   parseDateInput,
-  todayDateInput,
 } from '@/lib/deadline'
 import type { NewTaskInput } from '@/types/task'
 import {
@@ -27,6 +28,8 @@ interface FormValues {
   description: string
   /** '' = no target date. */
   dueDate: string
+  /** `HH:MM`; '' = no time picked (deadline is the end of the day). */
+  dueTime: string
 }
 
 interface TaskFormProps {
@@ -47,10 +50,13 @@ const fieldClass = (invalid: boolean) =>
 export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: TaskFormProps) {
   const id = useId()
   const initialDueDate = initialValues?.dueAt ? dueAtToDateInput(initialValues.dueAt) : ''
+  const initialDueTime =
+    initialValues?.dueAt && initialValues.hasDueTime ? dueAtToTimeInput(initialValues.dueAt) : ''
   const [values, setValues] = useState<FormValues>({
     title: initialValues?.title ?? '',
     description: initialValues?.description ?? '',
     dueDate: initialDueDate,
+    dueTime: initialDueTime,
   })
   const [errors, setErrors] = useState<TaskInputErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
@@ -58,25 +64,38 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
   // Guards against double submit even before React re-renders the disabled button.
   const submittingRef = useRef(false)
   const dueDateRef = useRef<HTMLInputElement>(null)
+  // Clock read once when the form opens (keeps render pure); used for the "already passed" hint.
+  const [openedAt] = useState(() => Date.now())
 
-  /** The stored deadline for the picked date (null = none, undefined = invalid date). */
-  function resolveDueAt(): string | null | undefined {
-    if (values.dueDate === '') return null
-    // Unchanged date → keep the exact saved deadline (even if the user has since changed timezone).
-    if (values.dueDate === initialDueDate && initialValues?.dueAt) return initialValues.dueAt
-    return dateInputToDueAt(values.dueDate) ?? undefined
+  /**
+   * The stored deadline for the picked date/time:
+   * `{ dueAt: null }` = no deadline, `{ error }` = invalid input.
+   */
+  function resolveDeadline(): { dueAt: string | null; hasDueTime: boolean } | { error: string } {
+    if (values.dueDate === '') return { dueAt: null, hasDueTime: false }
+    const hasDueTime = values.dueTime !== ''
+    // Unchanged date and time → keep the exact saved deadline (even if the user has since changed timezone).
+    if (values.dueDate === initialDueDate && values.dueTime === initialDueTime && initialValues?.dueAt) {
+      return { dueAt: initialValues.dueAt, hasDueTime }
+    }
+    if (!parseDateInput(values.dueDate)) return { error: `Enter a valid date between ${MIN_DUE_YEAR} and ${MAX_DUE_YEAR}.` }
+    const dueAt = dateInputToDueAt(values.dueDate, values.dueTime)
+    if (!dueAt) return { error: 'Enter a valid time.' }
+    return { dueAt, hasDueTime }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submittingRef.current) return
 
-    const dueAt = resolveDueAt()
-    const input: NewTaskInput = { title: values.title, description: values.description, dueAt: dueAt ?? null }
-    const validation = validateTaskInput(input)
-    if (dueAt === undefined) {
-      validation.dueAt = `Enter a valid date between ${MIN_DUE_YEAR} and ${MAX_DUE_YEAR}.`
+    const deadline = resolveDeadline()
+    const input: NewTaskInput = {
+      title: values.title,
+      description: values.description,
+      ...('error' in deadline ? { dueAt: null } : deadline),
     }
+    const validation = validateTaskInput(input)
+    if ('error' in deadline) validation.dueAt = deadline.error
     setErrors(validation)
     setFormError(null)
     if (hasErrors(validation)) return
@@ -96,8 +115,12 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
   const descriptionErrorId = `${id}-description-error`
   const dueDateErrorId = `${id}-due-date-error`
   const dueDateHintId = `${id}-due-date-hint`
-  const dueDateInPast =
-    values.dueDate !== '' && parseDateInput(values.dueDate) !== null && values.dueDate < todayDateInput()
+  const timeId = `${id}-due-time`
+  // Live preview of the deadline being picked, for the hint below the fields.
+  const preview = values.dueDate === '' ? null : dateInputToDueAt(values.dueDate, values.dueTime)
+  let dueHint = 'Due by the end of that day (11:59 pm).'
+  if (preview && Date.parse(preview) < openedAt) dueHint = 'This deadline has already passed.'
+  else if (preview && values.dueTime !== '') dueHint = `Due ${formatDueDate(preview, true)}.`
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
@@ -151,12 +174,15 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
         </div>
       </div>
 
-      <div>
-        <label htmlFor={`${id}-due-date`} className="mb-1.5 block text-sm font-semibold text-ink">
-          Target date <span className="font-normal text-brand-500">(optional)</span>
-        </label>
-        <div className="flex items-center gap-2">
-          <div className="w-full sm:w-60">
+      <fieldset>
+        <legend className="mb-1.5 text-sm font-semibold text-ink">
+          Deadline <span className="font-normal text-brand-500">(optional)</span>
+        </legend>
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,8.5rem)] items-end gap-2 sm:grid-cols-[13rem_8.5rem_auto]">
+          <div>
+            <label htmlFor={`${id}-due-date`} className="mb-1 block text-xs font-semibold text-brand-600">
+              Target date
+            </label>
             <input
               ref={dueDateRef}
               id={`${id}-due-date`}
@@ -171,16 +197,34 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
               className={fieldClass(Boolean(errors.dueAt))}
             />
           </div>
+          <div>
+            <label htmlFor={timeId} className="mb-1 block text-xs font-semibold text-brand-600">
+              Time <span className="font-normal text-brand-500">(optional)</span>
+            </label>
+            <input
+              id={timeId}
+              name="dueTime"
+              type="time"
+              value={values.dueTime}
+              onChange={(e) => setValues((v) => ({ ...v, dueTime: e.target.value }))}
+              disabled={values.dueDate === ''}
+              aria-describedby={errors.dueAt ? dueDateErrorId : dueDateHintId}
+              className={cn(
+                fieldClass(Boolean(errors.dueAt)),
+                'disabled:cursor-not-allowed disabled:border-brand-300 disabled:bg-paper disabled:text-brand-400',
+              )}
+            />
+          </div>
           {values.dueDate !== '' && (
             <button
               type="button"
               onClick={() => {
-                setValues((v) => ({ ...v, dueDate: '' }))
+                setValues((v) => ({ ...v, dueDate: '', dueTime: '' }))
                 setErrors(({ dueAt: _cleared, ...rest }) => rest)
                 dueDateRef.current?.focus()
               }}
-              aria-label="Clear target date"
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-2 text-sm font-semibold text-brand-600 hover:bg-paper hover:text-ink"
+              aria-label="Clear deadline"
+              className="inline-flex items-center gap-1 justify-self-start rounded-lg px-2 py-2.5 text-sm font-semibold text-brand-600 hover:bg-paper hover:text-ink"
             >
               <X className="size-4" aria-hidden="true" />
               Clear
@@ -193,10 +237,10 @@ export function TaskForm({ initialValues, submitLabel, onSubmit, onCancel }: Tas
           </p>
         ) : (
           <p id={dueDateHintId} className="mt-1.5 text-xs text-brand-500">
-            {dueDateInPast ? 'This date has already passed.' : 'Due by the end of that day (11:59 pm).'}
+            {dueHint}
           </p>
         )}
-      </div>
+      </fieldset>
 
       {formError && (
         <p

@@ -113,4 +113,9 @@ Short chronological history of the project. Newest entries at the bottom.
 ## 2026-11-26 — Task 3.1: Target completion date
 - Optional date picker on the task form; saved as `dueAt` = picked day at 23:59 local (UTC timestamp). "Due" chip on cards, "Target date" section on details. Past dates allowed with a gentle note; out-of-range years rejected.
 - 216 tests green, also under 7 different timezones. Browser check on desktop + mobile clean.
-- Waiting for approval to commit `feat(deadlines): add task date selection`.
+- Committed and pushed Task 3.1 (`440d18f`); CI green.
+
+## 2026-11-27 — Task 3.2: Deadline time
+- Optional time next to the date (blank = 11:59 pm); `hasDueTime` records whether a time was picked, so cards/details show the time only then. Live "Due …" preview under the fields.
+- 242 tests green, also under 7 timezones. Browser check on desktop + mobile clean.
+- Waiting for approval to commit `feat(deadlines): implement deadline time selection`.

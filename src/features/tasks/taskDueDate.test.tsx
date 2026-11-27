@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { dateInputToDueAt, formatDueDate } from '@/lib/deadline'
@@ -13,7 +13,9 @@ const LATER = '2099-06-20'
 const PAST = '2020-01-15'
 
 const dateField = () => screen.getByLabelText(/Target date/)
-const storedTasks = () => JSON.parse(window.localStorage.getItem('todo.tasks.v1') ?? '[]') as { dueAt: string | null }[]
+const timeField = () => screen.getByLabelText(/^Time/)
+const storedTasks = () =>
+  JSON.parse(window.localStorage.getItem('todo.tasks.v1') ?? '[]') as { dueAt: string | null; hasDueTime: boolean }[]
 
 async function createTask(user: User, title: string, date?: string) {
   await user.click(screen.getByRole('button', { name: 'New task' }))
@@ -64,7 +66,7 @@ describe('target date', () => {
 
     expect(dateField()).toHaveAccessibleDescription('Due by the end of that day (11:59 pm).')
     await user.type(dateField(), PAST)
-    expect(dateField()).toHaveAccessibleDescription('This date has already passed.')
+    expect(dateField()).toHaveAccessibleDescription('This deadline has already passed.')
   })
 
   it('can be cleared before saving', async () => {
@@ -74,10 +76,10 @@ describe('target date', () => {
     await user.type(screen.getByLabelText(/Title/), 'Changed my mind')
     await user.type(dateField(), FUTURE)
 
-    await user.click(screen.getByRole('button', { name: 'Clear target date' }))
+    await user.click(screen.getByRole('button', { name: 'Clear deadline' }))
     expect(dateField()).toHaveValue('')
     expect(dateField()).toHaveFocus()
-    expect(screen.queryByRole('button', { name: 'Clear target date' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Clear deadline' })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Create task' }))
     await screen.findByRole('heading', { name: 'Changed my mind' })
@@ -120,7 +122,7 @@ describe('target date', () => {
       renderApp('/', { repository: repo })
       await user.click(await screen.findByRole('button', { name: 'Edit "Write report"' }))
 
-      await user.click(screen.getByRole('button', { name: 'Clear target date' }))
+      await user.click(screen.getByRole('button', { name: 'Clear deadline' }))
       await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
       await screen.findByRole('heading', { name: 'Write report' })
@@ -161,4 +163,101 @@ describe('target date', () => {
       expect(await screen.findByRole('region', { name: 'Target date' })).toHaveTextContent('No target date.')
     })
   })
+
+  describe('deadline time', () => {
+    it('is disabled until a date is picked', async () => {
+      const user = userEvent.setup()
+      renderApp('/')
+      await user.click(screen.getByRole('button', { name: 'New task' }))
+
+      expect(timeField()).toBeDisabled()
+      await user.type(dateField(), FUTURE)
+      expect(timeField()).toBeEnabled()
+    })
+
+    it('saves the picked local time and shows it on the card and details page', async () => {
+      const user = userEvent.setup()
+      renderApp('/')
+      await user.click(screen.getByRole('button', { name: 'New task' }))
+      await user.type(screen.getByLabelText(/Title/), 'Submit form')
+      await user.type(dateField(), FUTURE)
+      await user.type(timeField(), '17:30')
+
+      const due = dateInputToDueAt(FUTURE, '17:30')!
+      expect(dateField()).toHaveAccessibleDescription(`Due ${formatDueDate(due, true)}.`)
+      await user.click(screen.getByRole('button', { name: 'Create task' }))
+      await screen.findByRole('heading', { name: 'Submit form' })
+
+      expect(storedTasks()[0]).toMatchObject({ dueAt: due, hasDueTime: true })
+      expect(new Date(due).getHours()).toBe(17)
+      expect(new Date(due).getMinutes()).toBe(30)
+      expect(screen.getByText(/^Due/)).toHaveTextContent(`Due ${formatDueDate(due, true)}`)
+
+      await user.click(screen.getByRole('link', { name: 'Submit form' }))
+      expect(await screen.findByRole('region', { name: 'Target date' })).toHaveTextContent(formatDueDate(due, true))
+    })
+
+    it('without a time, stores 23:59 and shows only the date', async () => {
+      const user = userEvent.setup()
+      renderApp('/')
+      await createTask(user, 'Date only', FUTURE)
+
+      const due = dateInputToDueAt(FUTURE)!
+      expect(storedTasks()[0]).toMatchObject({ dueAt: due, hasDueTime: false })
+      expect(screen.getByText(/^Due/)).toHaveTextContent(`Due ${formatDueDate(due)}`)
+      expect(screen.getByText(/^Due/).textContent).not.toMatch(/11:59|23:59/)
+    })
+
+    it('warns when today\'s deadline time has already passed', async () => {
+      const user = userEvent.setup()
+      renderApp('/')
+      await user.click(screen.getByRole('button', { name: 'New task' }))
+      await user.type(dateField(), PAST)
+      await user.type(timeField(), '09:00')
+      expect(dateField()).toHaveAccessibleDescription('This deadline has already passed.')
+    })
+
+    it('is pre-filled when editing, can be changed or removed, and Clear resets both fields', async () => {
+      const repo = createLocalStorageTaskRepository({ storage: window.localStorage })
+      await repo.create({
+        title: 'Write report',
+        description: '',
+        dueAt: dateInputToDueAt(FUTURE, '08:15'),
+        hasDueTime: true,
+      })
+      const user = userEvent.setup()
+      renderApp('/', { repository: repo })
+      await user.click(await screen.findByRole('button', { name: 'Edit "Write report"' }))
+
+      expect(dateField()).toHaveValue(FUTURE)
+      expect(timeField()).toHaveValue('08:15')
+
+      // Remove only the time → back to end of day.
+      await user.clear(timeField())
+      await user.click(screen.getByRole('button', { name: 'Save changes' }))
+      await screen.findByRole('heading', { name: 'Write report' })
+      await waitForDialogToClose()
+      expect(storedTasks()[0]).toMatchObject({ dueAt: dateInputToDueAt(FUTURE), hasDueTime: false })
+
+      // Clear resets date and time.
+      await user.click(screen.getByRole('button', { name: 'Edit "Write report"' }))
+      await user.type(timeField(), '10:00')
+      await user.click(screen.getByRole('button', { name: 'Clear deadline' }))
+      expect(dateField()).toHaveValue('')
+      expect(timeField()).toHaveValue('')
+      expect(timeField()).toBeDisabled()
+    })
+
+    it('a date-only task opens with an empty time field', async () => {
+      const { repo } = await seedWithDate(FUTURE)
+      const user = userEvent.setup()
+      renderApp('/', { repository: repo })
+      await user.click(await screen.findByRole('button', { name: 'Edit "Write report"' }))
+      expect(timeField()).toHaveValue('')
+    })
+  })
 })
+
+async function waitForDialogToClose() {
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+}

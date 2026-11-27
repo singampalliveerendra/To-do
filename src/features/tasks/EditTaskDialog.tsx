@@ -18,7 +18,7 @@ export function EditTaskDialog({ task, onClose }: EditTaskDialogProps) {
         <TaskForm
           // New key per task so the form always starts from that task's values.
           key={task.id}
-          initialValues={{ title: task.title, description: task.description, dueAt: task.dueAt }}
+          initialValues={{ title: task.title, description: task.description, dueAt: task.dueAt, hasDueTime: task.hasDueTime }}
           submitLabel="Save changes"
           onCancel={onClose}
           onSubmit={async (input) => {

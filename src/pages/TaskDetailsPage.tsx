@@ -199,7 +199,7 @@ export function TaskDetailsPage() {
               {task.dueAt ? (
                 <p className="flex items-center gap-2 text-[15px] font-semibold text-ink">
                   <CalendarDays className="size-4 text-brand-500" aria-hidden="true" />
-                  <time dateTime={task.dueAt}>{formatDueDate(task.dueAt)}</time>
+                  <time dateTime={task.dueAt}>{formatDueDate(task.dueAt, task.hasDueTime)}</time>
                 </p>
               ) : (
                 <p className="text-sm text-brand-500 italic">No target date.</p>

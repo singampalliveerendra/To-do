@@ -31,6 +31,7 @@ describe('createLocalStorageTaskRepository', () => {
       completedAt: null,
       archivedAt: null,
       dueAt: null,
+      hasDueTime: false,
     })
   })
 
@@ -39,6 +40,29 @@ describe('createLocalStorageTaskRepository', () => {
     expect(task.dueAt).toBe('2026-12-05T18:29:00.000Z')
     const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
     expect((await afterRefresh.list())[0].dueAt).toBe('2026-12-05T18:29:00.000Z')
+  })
+
+  it('saves whether a deadline time was picked', async () => {
+    const repo = makeRepo()
+    const timed = await repo.create({
+      title: 'Timed',
+      description: '',
+      dueAt: '2026-12-05T11:30:00.000Z',
+      hasDueTime: true,
+    })
+    expect(timed.hasDueTime).toBe(true)
+    const dateOnly = await repo.create({ title: 'Date only', description: '', dueAt: '2026-12-05T18:29:00.000Z' })
+    expect(dateOnly.hasDueTime).toBe(false)
+    // A time flag without a deadline makes no sense, so it is dropped.
+    const noDeadline = await repo.create({ title: 'None', description: '', hasDueTime: true })
+    expect(noDeadline.hasDueTime).toBe(false)
+
+    const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+    expect((await afterRefresh.list()).map((t) => [t.title, t.hasDueTime])).toEqual([
+      ['None', false],
+      ['Date only', false],
+      ['Timed', true],
+    ])
   })
 
   it('rejects a malformed target date and saves nothing', async () => {
@@ -94,6 +118,7 @@ describe('createLocalStorageTaskRepository', () => {
       completedAt: null,
       archivedAt: null,
       dueAt: '2026-11-30T18:29:00.000Z',
+      hasDueTime: false,
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([valid, { id: 1 }, null, 'text']))
     expect(await makeRepo().list()).toEqual([valid])
@@ -109,7 +134,9 @@ describe('createLocalStorageTaskRepository', () => {
       dueAt: 'not a date',
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([stored]))
-    expect(await makeRepo().list()).toEqual([{ ...stored, completedAt: null, archivedAt: null, dueAt: null }])
+    expect(await makeRepo().list()).toEqual([
+      { ...stored, completedAt: null, archivedAt: null, dueAt: null, hasDueTime: false },
+    ])
   })
 
   it('loads tasks saved by older versions as active and not complete', async () => {
@@ -121,7 +148,9 @@ describe('createLocalStorageTaskRepository', () => {
       updatedAt: '2026-11-25T09:00:00.000Z',
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([legacy]))
-    expect(await makeRepo().list()).toEqual([{ ...legacy, completedAt: null, archivedAt: null, dueAt: null }])
+    expect(await makeRepo().list()).toEqual([
+      { ...legacy, completedAt: null, archivedAt: null, dueAt: null, hasDueTime: false },
+    ])
   })
 
   it('reports a friendly error when storage is full', async () => {
@@ -187,6 +216,15 @@ describe('createLocalStorageTaskRepository', () => {
 
       const cleared = await repo.update(created.id, { title: 'Report', description: '', dueAt: null })
       expect(cleared.dueAt).toBeNull()
+    })
+
+    it('treats adding a time to the same instant as a change', async () => {
+      const repo = makeRepo()
+      const due = '2026-12-05T18:29:00.000Z'
+      const created = await repo.create({ title: 'Same', description: '', dueAt: due })
+      const result = await repo.update(created.id, { title: 'Same', description: '', dueAt: due, hasDueTime: true })
+      expect(result.hasDueTime).toBe(true)
+      expect(result.updatedAt).not.toBe(created.updatedAt)
     })
 
     it('keeps updatedAt when the target date is unchanged', async () => {

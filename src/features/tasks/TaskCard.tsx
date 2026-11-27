@@ -149,7 +149,7 @@ export function TaskCard({ task, onToggleComplete, onEdit, onArchive, onRestore,
             {task.dueAt && (
               <span className="inline-flex items-center gap-1 rounded-full border border-ink/25 bg-paper px-2 py-0.5 font-semibold text-ink">
                 <CalendarDays className="size-3.5" aria-hidden="true" />
-                Due <time dateTime={task.dueAt}>{formatDueDate(task.dueAt)}</time>
+                Due <time dateTime={task.dueAt}>{formatDueDate(task.dueAt, task.hasDueTime)}</time>
               </span>
             )}
             {task.completedAt && (

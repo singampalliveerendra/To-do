@@ -11,13 +11,15 @@ export type NormalizedTaskInput = Required<NewTaskInput>
 
 /**
  * Trims surrounding whitespace so "  Buy milk  " is saved as "Buy milk",
- * and turns a missing deadline into null.
+ * turns a missing deadline into null, and drops `hasDueTime` when there is no deadline.
  */
 export function normalizeTaskInput(input: NewTaskInput): NormalizedTaskInput {
+  const dueAt = input.dueAt ?? null
   return {
     title: input.title.trim(),
     description: input.description.trim(),
-    dueAt: input.dueAt ?? null,
+    dueAt,
+    hasDueTime: dueAt !== null && (input.hasDueTime ?? false),
   }
 }
 
