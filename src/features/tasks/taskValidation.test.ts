@@ -31,6 +31,15 @@ describe('validateTaskInput', () => {
     expect(hasErrors(errors)).toBe(true)
   })
 
+  it('accepts no target date, null, or a valid UTC timestamp', () => {
+    expect(validateTaskInput({ title: 'ok', description: '', dueAt: null })).toEqual({})
+    expect(validateTaskInput({ title: 'ok', description: '', dueAt: '2026-12-05T18:29:00.000Z' })).toEqual({})
+  })
+
+  it.each(['', 'tomorrow', '2026-12-05', '2026-02-30T23:59:00.000Z'])('rejects a malformed target date (%j)', (dueAt) => {
+    expect(validateTaskInput({ title: 'ok', description: '', dueAt }).dueAt).toBe('Target date is not a valid date.')
+  })
+
   it('measures length after trimming spaces', () => {
     const padded = `  ${'a'.repeat(TITLE_MAX_LENGTH)}  `
     expect(validateTaskInput({ title: padded, description: '' })).toEqual({})
@@ -42,6 +51,13 @@ describe('normalizeTaskInput', () => {
     expect(normalizeTaskInput({ title: '  Report  ', description: '\n notes \n' })).toEqual({
       title: 'Report',
       description: 'notes',
+      dueAt: null,
     })
+  })
+
+  it('keeps a given target date', () => {
+    expect(normalizeTaskInput({ title: 'R', description: '', dueAt: '2026-12-05T18:29:00.000Z' }).dueAt).toBe(
+      '2026-12-05T18:29:00.000Z',
+    )
   })
 })

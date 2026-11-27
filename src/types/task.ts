@@ -9,10 +9,14 @@ export interface Task {
   completedAt: string | null
   /** When the task was archived (soft-deleted), or null if it is active. */
   archivedAt: string | null
+  /** Target completion time (UTC), or null when the task has no deadline. */
+  dueAt: string | null
 }
 
 /** What the user fills in when creating or editing a task. */
 export interface NewTaskInput {
   title: string
   description: string
+  /** Target completion time (UTC ISO string). Omitted or null = no deadline. */
+  dueAt?: string | null
 }

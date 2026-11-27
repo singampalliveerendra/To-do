@@ -30,7 +30,23 @@ describe('createLocalStorageTaskRepository', () => {
       updatedAt: '2026-11-25T10:01:00.000Z',
       completedAt: null,
       archivedAt: null,
+      dueAt: null,
     })
+  })
+
+  it('saves a target date', async () => {
+    const task = await makeRepo().create({ title: 'Report', description: '', dueAt: '2026-12-05T18:29:00.000Z' })
+    expect(task.dueAt).toBe('2026-12-05T18:29:00.000Z')
+    const afterRefresh = createLocalStorageTaskRepository({ storage: window.localStorage })
+    expect((await afterRefresh.list())[0].dueAt).toBe('2026-12-05T18:29:00.000Z')
+  })
+
+  it('rejects a malformed target date and saves nothing', async () => {
+    const repo = makeRepo()
+    await expect(repo.create({ title: 'Report', description: '', dueAt: 'next friday' })).rejects.toBeInstanceOf(
+      TaskValidationError,
+    )
+    expect(await repo.list()).toEqual([])
   })
 
   it('persists tasks so a new instance (page refresh) still sees them', async () => {
@@ -77,9 +93,23 @@ describe('createLocalStorageTaskRepository', () => {
       updatedAt: '2026-11-25T09:00:00.000Z',
       completedAt: null,
       archivedAt: null,
+      dueAt: '2026-11-30T18:29:00.000Z',
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([valid, { id: 1 }, null, 'text']))
     expect(await makeRepo().list()).toEqual([valid])
+  })
+
+  it('ignores a corrupted stored target date instead of dropping the task', async () => {
+    const stored = {
+      id: 'bad-date',
+      title: 'Keep me',
+      description: '',
+      createdAt: '2026-11-25T09:00:00.000Z',
+      updatedAt: '2026-11-25T09:00:00.000Z',
+      dueAt: 'not a date',
+    }
+    window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([stored]))
+    expect(await makeRepo().list()).toEqual([{ ...stored, completedAt: null, archivedAt: null, dueAt: null }])
   })
 
   it('loads tasks saved by older versions as active and not complete', async () => {
@@ -91,7 +121,7 @@ describe('createLocalStorageTaskRepository', () => {
       updatedAt: '2026-11-25T09:00:00.000Z',
     }
     window.localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify([legacy]))
-    expect(await makeRepo().list()).toEqual([{ ...legacy, completedAt: null, archivedAt: null }])
+    expect(await makeRepo().list()).toEqual([{ ...legacy, completedAt: null, archivedAt: null, dueAt: null }])
   })
 
   it('reports a friendly error when storage is full', async () => {
@@ -138,6 +168,33 @@ describe('createLocalStorageTaskRepository', () => {
       await repo.update(first.id, { title: 'First (edited)', description: '' })
 
       expect((await repo.list()).map((t) => t.title)).toEqual(['Second', 'First (edited)'])
+    })
+
+    it('sets, changes and clears the target date', async () => {
+      const repo = makeRepo()
+      const created = await repo.create({ title: 'Report', description: '' })
+
+      const withDate = await repo.update(created.id, {
+        title: 'Report',
+        description: '',
+        dueAt: '2026-12-05T18:29:00.000Z',
+      })
+      expect(withDate.dueAt).toBe('2026-12-05T18:29:00.000Z')
+      expect(withDate.updatedAt).toBe('2026-11-25T10:02:00.000Z')
+
+      const moved = await repo.update(created.id, { title: 'Report', description: '', dueAt: '2026-12-06T18:29:00.000Z' })
+      expect(moved.dueAt).toBe('2026-12-06T18:29:00.000Z')
+
+      const cleared = await repo.update(created.id, { title: 'Report', description: '', dueAt: null })
+      expect(cleared.dueAt).toBeNull()
+    })
+
+    it('keeps updatedAt when the target date is unchanged', async () => {
+      const repo = makeRepo()
+      const due = '2026-12-05T18:29:00.000Z'
+      const created = await repo.create({ title: 'Same', description: '', dueAt: due })
+      const result = await repo.update(created.id, { title: 'Same', description: '', dueAt: due })
+      expect(result.updatedAt).toBe(created.updatedAt)
     })
 
     it('keeps updatedAt when nothing actually changed', async () => {

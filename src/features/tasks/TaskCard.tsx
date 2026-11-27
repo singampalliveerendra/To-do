@@ -1,8 +1,9 @@
-import { Archive, ArchiveRestore, Check, Pencil, Trash2, type LucideIcon } from 'lucide-react'
+import { Archive, ArchiveRestore, CalendarDays, Check, Pencil, Trash2, type LucideIcon } from 'lucide-react'
 import { useState, type CSSProperties } from 'react'
 import { Link, useLocation } from 'react-router'
 import { cn } from '@/lib/cn'
 import { formatDateTime } from '@/lib/datetime'
+import { formatDueDate } from '@/lib/deadline'
 import type { Task } from '@/types/task'
 
 export interface TaskCardActions {
@@ -145,6 +146,12 @@ export function TaskCard({ task, onToggleComplete, onEdit, onArchive, onRestore,
           )}
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-brand-500">
+            {task.dueAt && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-ink/25 bg-paper px-2 py-0.5 font-semibold text-ink">
+                <CalendarDays className="size-3.5" aria-hidden="true" />
+                Due <time dateTime={task.dueAt}>{formatDueDate(task.dueAt)}</time>
+              </span>
+            )}
             {task.completedAt && (
               <span className="rounded-full border border-status-completed/30 bg-status-completed-soft px-2 py-0.5 font-semibold text-status-completed">
                 Completed <time dateTime={task.completedAt}>{formatDateTime(task.completedAt)}</time>

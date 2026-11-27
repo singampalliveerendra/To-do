@@ -2,6 +2,7 @@ import {
   Archive,
   ArchiveRestore,
   ArrowLeft,
+  CalendarDays,
   CircleCheckBig,
   FileQuestion,
   LoaderCircle,
@@ -17,6 +18,7 @@ import { useTasks } from '@/features/tasks/TasksContext'
 import { useTaskActions } from '@/features/tasks/useTaskActions'
 import { cn } from '@/lib/cn'
 import { formatDateTime } from '@/lib/datetime'
+import { formatDueDate } from '@/lib/deadline'
 import type { Task } from '@/types/task'
 
 /** Where the user came from, so "Back" returns there (set by task card links). */
@@ -189,25 +191,41 @@ export function TaskDetailsPage() {
             )}
           </section>
 
-          <section aria-labelledby="history-heading">
-            <h3 id="history-heading" className="mb-3 text-xs font-bold tracking-[0.12em] text-brand-500 uppercase">
-              History
-            </h3>
-            <ol className="space-y-4 border-l-2 border-dashed border-brand-300 pl-5" aria-label="Task history">
-              {timeline.map((entry) => (
-                <li key={entry.label} className="relative">
-                  <span
-                    className={cn('absolute top-0.5 -left-[29px] size-3.5 rounded-full border-2 border-ink', entry.dot)}
-                    aria-hidden="true"
-                  />
-                  <p className={cn('text-sm font-semibold text-ink', entry.className)}>{entry.label}</p>
-                  <time dateTime={entry.at} className="text-xs text-brand-500">
-                    {formatDateTime(entry.at)}
-                  </time>
-                </li>
-              ))}
-            </ol>
-          </section>
+          <div className="space-y-8">
+            <section aria-labelledby="due-heading">
+              <h3 id="due-heading" className="mb-2 text-xs font-bold tracking-[0.12em] text-brand-500 uppercase">
+                Target date
+              </h3>
+              {task.dueAt ? (
+                <p className="flex items-center gap-2 text-[15px] font-semibold text-ink">
+                  <CalendarDays className="size-4 text-brand-500" aria-hidden="true" />
+                  <time dateTime={task.dueAt}>{formatDueDate(task.dueAt)}</time>
+                </p>
+              ) : (
+                <p className="text-sm text-brand-500 italic">No target date.</p>
+              )}
+            </section>
+
+            <section aria-labelledby="history-heading">
+              <h3 id="history-heading" className="mb-3 text-xs font-bold tracking-[0.12em] text-brand-500 uppercase">
+                History
+              </h3>
+              <ol className="space-y-4 border-l-2 border-dashed border-brand-300 pl-5" aria-label="Task history">
+                {timeline.map((entry) => (
+                  <li key={entry.label} className="relative">
+                    <span
+                      className={cn('absolute top-0.5 -left-[29px] size-3.5 rounded-full border-2 border-ink', entry.dot)}
+                      aria-hidden="true"
+                    />
+                    <p className={cn('text-sm font-semibold text-ink', entry.className)}>{entry.label}</p>
+                    <time dateTime={entry.at} className="text-xs text-brand-500">
+                      {formatDateTime(entry.at)}
+                    </time>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </div>
         </div>
       </article>
 

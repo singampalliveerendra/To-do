@@ -51,13 +51,13 @@ _Goal: calm, minimal, premium UI inspired by the comic look of the SNACCOON temp
 | S.2 | Layout: sidebar, header, page background (remove floating blobs) | P1 | Completed | Passed (GitHub run ✅) | `1bec9b6` | `feat(ui): restyle layout with paper and ink` | Yes |
 | S.3 | Dashboard, progress card, filters/status views and task cards | P1 | Completed | Passed (GitHub run ✅) | `3542c77` | `feat(ui): restyle dashboard, progress and task cards` | Yes |
 | S.4 | Add-task flow (dialog + form), details page, 404, mobile polish; remove legacy vibrant utilities | P1 | Completed | Passed locally; GitHub run ❌ (flaky test, see S.4-fix) | `33c3fbe` | `feat(ui): restyle task forms, details and dialogs` | Yes |
-| S.4-fix | Fix flaky banner-progress test (asserted before tasks finished loading) | P0 | Testing | Passed (15/15 isolated runs) | — | `test(tasks): wait for loaded tasks in progress bar test` | No |
+| S.4-fix | Fix flaky banner-progress test (asserted before tasks finished loading) | P0 | Completed | Passed (GitHub run ✅) | `c01e39f` | `test(tasks): wait for loaded tasks in progress bar test` | Yes |
 
 ## Milestone 3 — Deadlines & Progress Tracking
 
 | ID | Task | Priority | Status | Tests | Commit hash | Commit message | Pushed |
 |---|---|---|---|---|---|---|---|
-| 3.1 | Target completion date picker (stored as `dueAt`, default 23:59 local) | P0 | Not Started | — | — | `feat(deadlines): add task date selection` | No |
+| 3.1 | Target completion date picker (stored as `dueAt`, default 23:59 local) | P0 | Testing | Passed (local) | — | `feat(deadlines): add task date selection` | No |
 | 3.2 | Deadline time picker, combined into `dueAt` with timezone-safe helpers + unit tests | P0 | Not Started | — | — | `feat(deadlines): implement deadline time selection` | No |
 | 3.3 | Progress 0–100% (slider + number), 100% auto-completes the task | P0 | Not Started | — | — | `feat(progress): add percentage-based progress tracking` | No |
 | 3.4 | Checkpoints: each update stores timestamp + progress % + comment (append-only) | P0 | Not Started | — | — | `feat(comments): implement timestamped progress updates` | No |
@@ -234,4 +234,10 @@ _Each finished task gets a short entry here: what changed, tests passed/failed, 
 - Cause: in S.3 the completion test switched from waiting for the old ring by its exact label to finding the progress bar and checking its value immediately. The bar exists from the first render ("0 of 0") while tasks are still loading, so on GitHub's slower runner the check ran before the 2 tasks loaded. It passed locally by timing luck.
 - Fix: `completeTask.test.tsx` waits (`waitFor`) for the expected value before and after ticking. No app code changed.
 - Tests: the test passed 15/15 isolated runs; `npm run check` → 171/171, build passed.
+- Commit: `c01e39f`. Pushed: Yes (2026-11-25). GitHub Actions run ✅. **Milestone S complete.**
+
+### 3.1 — Target completion date
+- Changed: `Task.dueAt` (UTC ISO string or null); older saved tasks load with no date, and a corrupted stored date is dropped instead of the task. `NewTaskInput.dueAt` is optional (missing = no date); validation rejects anything that is not a canonical UTC timestamp; `update` treats a date change as an edit. New `src/lib/deadline.ts`: `parseDateInput` (real calendar dates only, years 2000–2100 to catch typos), `dateInputToDueAt` (picked day at 23:59 **local**, built with the local `Date` constructor so DST is handled by the browser), `dueAtToDateInput`, `todayDateInput`, `isIsoTimestamp`, `formatDueDate`. `TaskForm` has an optional "Target date" field (native date picker, Clear button, hint "Due by the end of that day (11:59 pm)", gentle "This date has already passed." for past dates, inline error for out-of-range dates). Editing keeps the exact saved deadline when the date is unchanged (no shift after a timezone change). Task cards show a "Due <date>" chip; details page has a "Target date" section.
+- Tests: new `deadline.test.ts` (calendar validation, leap years, 23:59 local, round-trips on DST switch days) and `taskDueDate.test.tsx` (create with/without date, hint, past warning, clear, out-of-range error, edit/change/remove, unchanged deadline kept, details page); repository and validation tests extended. `npm run check` → lint (no new warnings), typecheck, 216/216 tests, build passed. Full suite also passed with `TZ` = UTC, America/New_York, Europe/London, Asia/Kolkata, Pacific/Auckland, Pacific/Honolulu, Australia/Adelaide. Browser (Chromium, desktop + mobile, IST): 5 Dec stored as `2026-12-05T18:29:00.000Z` (= 23:59 IST), survives refresh, edit pre-filled, details page correct; no overflow, no console errors.
+- Failed / fixed: (1) whole-object test comparisons needed the new `dueAt` field; (2) the Clear button's screen-reader name wasn't picked up from an `sr-only` span — now uses `aria-label`; (3) screenshot showed two calendar icons (mine + Chrome's native one) — removed mine.
 - Commit: waiting for approval. Pushed: No.

@@ -108,3 +108,9 @@ Short chronological history of the project. Newest entries at the bottom.
 - Paper & Ink dialogs (mobile bottom sheet), outlined form fields with yellow focus, calm confirmations, restyled details page and 404. Removed every legacy vibrant style.
 - 171 tests green. **Milestone S complete** once committed. Next: Milestone 3 (deadlines).
 - Committed and pushed Task S.4 (`33c3fbe`), but the GitHub Actions run failed: a test introduced in S.3 checked the progress bar before tasks had loaded (timing-dependent, passed locally). Fixed the test to wait for the loaded value (S.4-fix); 15/15 repeated runs green.
+- S.4-fix committed and pushed (`c01e39f`); GitHub Actions run ✅. **Milestone S complete.**
+
+## 2026-11-26 — Task 3.1: Target completion date
+- Optional date picker on the task form; saved as `dueAt` = picked day at 23:59 local (UTC timestamp). "Due" chip on cards, "Target date" section on details. Past dates allowed with a gentle note; out-of-range years rejected.
+- 216 tests green, also under 7 different timezones. Browser check on desktop + mobile clean.
+- Waiting for approval to commit `feat(deadlines): add task date selection`.

@@ -11,6 +11,7 @@ function task(id: string, overrides: Partial<Task> = {}): Task {
     updatedAt: '2026-11-25T09:00:00.000Z',
     completedAt: null,
     archivedAt: null,
+    dueAt: null,
     ...overrides,
   }
 }

@@ -11,7 +11,7 @@ export interface TaskRepository {
   /** Validates, saves and returns the new task. */
   create(input: NewTaskInput): Promise<Task>
   /**
-   * Validates and saves new title/description for an existing task.
+   * Validates and saves new title/description/deadline for an existing task.
    * Throws `TaskNotFoundError` if the task no longer exists.
    */
   update(id: string, input: NewTaskInput): Promise<Task>

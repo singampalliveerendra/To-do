@@ -1,3 +1,4 @@
+import { isIsoTimestamp } from '@/lib/deadline'
 import type { Task } from '@/types/task'
 import { TaskNotArchivedError, TaskNotFoundError, type TaskRepository } from './taskRepository'
 import { hasErrors, normalizeTaskInput, TaskValidationError, validateTaskInput } from './taskValidation'
@@ -13,7 +14,7 @@ interface Options {
 /**
  * Turns one stored entry into a Task, or null if it is not a valid task.
  * Fills in fields added after the entry was saved (`archivedAt` from Task 2.3,
- * `completedAt` from Task 2.4),
+ * `completedAt` from Task 2.4, `dueAt` from Task 3.1),
  * so data saved by older versions of the app keeps working.
  */
 function parseTask(value: unknown): Task | null {
@@ -36,6 +37,7 @@ function parseTask(value: unknown): Task | null {
     updatedAt: v.updatedAt,
     completedAt: typeof v.completedAt === 'string' ? v.completedAt : null,
     archivedAt: typeof v.archivedAt === 'string' ? v.archivedAt : null,
+    dueAt: typeof v.dueAt === 'string' && isIsoTimestamp(v.dueAt) ? v.dueAt : null,
   }
 }
 
@@ -90,7 +92,7 @@ export function createLocalStorageTaskRepository({
       const errors = validateTaskInput(input)
       if (hasErrors(errors)) throw new TaskValidationError(errors)
 
-      const { title, description } = normalizeTaskInput(input)
+      const { title, description, dueAt } = normalizeTaskInput(input)
       const timestamp = now().toISOString()
       const task: Task = {
         id: generateId(),
@@ -100,6 +102,7 @@ export function createLocalStorageTaskRepository({
         updatedAt: timestamp,
         completedAt: null,
         archivedAt: null,
+        dueAt,
       }
       write([task, ...read()])
       return task
@@ -108,13 +111,13 @@ export function createLocalStorageTaskRepository({
     async update(id, input) {
       const errors = validateTaskInput(input)
       if (hasErrors(errors)) throw new TaskValidationError(errors)
-      const { title, description } = normalizeTaskInput(input)
+      const { title, description, dueAt } = normalizeTaskInput(input)
 
       return modify(id, (task) =>
         // Nothing changed → keep the original "last updated" time.
-        task.title === title && task.description === description
+        task.title === title && task.description === description && task.dueAt === dueAt
           ? task
-          : { ...task, title, description, updatedAt: now().toISOString() },
+          : { ...task, title, description, dueAt, updatedAt: now().toISOString() },
       )
     },
 
